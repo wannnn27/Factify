@@ -1,30 +1,22 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:myapp/main.dart';
+// PENTING: Pastikan nama package di bawah ini sesuai dengan nama di pubspec.yaml Anda.
+// Jika di pubspec.yaml name: factify, maka gunakan 'package:factify/main.dart'
+// Jika masih default, mungkin 'package:myapp/main.dart'
+import 'package:factify/main.dart'; 
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('App starts with Splash Screen smoke test', (WidgetTester tester) async {
+    // 1. Jalankan aplikasi (MyApp)
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // 2. Karena aplikasi dimulai dengan SplashScreen, kita cek apakah
+    // Ikon Logo (Icons.grid_view_rounded) muncul di layar.
+    expect(find.byIcon(Icons.grid_view_rounded), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Kita tidak mengecek teks "Factify" langsung karena di Splash Screen
+    // teks tersebut muncul menggunakan animasi (AnimatedOpacity), 
+    // jadi mungkin belum terbaca di milidetik pertama render.
   });
 }

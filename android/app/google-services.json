@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "495045892492",
+    "project_id": "factify-2b144",
+    "storage_bucket": "factify-2b144.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495045892492:android:d3365d5719eab447cc9ea9",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsws0FSmemWjk5ZW01mRvWoBjJxLAB8vE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
