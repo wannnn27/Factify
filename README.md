@@ -48,7 +48,7 @@ Inti dari kemampuan verifikasi Factify dibangun di atas arsitektur model hybrid:
 
 **Hasil Evaluasi:** Sistem mampu memberikan skor kredibilitas (0-100), mengidentifikasi kategori konten (Fakta, Hoaks, Opini, Satire), dan menyertakan referensi sumber yang valid dengan tingkat akurasi yang memadai untuk penggunaan umum.
 
-## Proyek Akhir: Solusi AI End-to-End
+## Tentang Project
 
 Factify merupakan implementasi solusi AI dari hulu ke hilir yang terdiri dari:
 
