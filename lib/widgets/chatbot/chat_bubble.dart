@@ -1,7 +1,7 @@
-// file: lib/widgets/chatbot/chat_bubble.dart
 import 'package:flutter/material.dart';
 import 'package:factify/models/chat_message.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
@@ -76,12 +76,41 @@ class ChatBubble extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Text(
-                    message.text,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      height: 1.4,
+                  child: MarkdownBody(
+                    data: message.text,
+                    styleSheet: MarkdownStyleSheet(
+                      p: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                      strong: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      em: const TextStyle(color: Colors.white70, fontStyle: FontStyle.italic),
+                      listBullet: const TextStyle(
+                        color: Colors.white,
+                      ),
+                      h1: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                      h2: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      h3: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                      h4: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                      h5: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                      h6: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      tableHead: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      tableBody: const TextStyle(color: Colors.white),
+                      tableBorder: TableBorder.all(color: Colors.white24, width: 1),
+                      blockquote: const TextStyle(color: Colors.white70, fontStyle: FontStyle.italic),
+                      code: const TextStyle(
+                        color: Colors.white,
+                        backgroundColor: Colors.white12,
+                        fontFamily: 'monospace',
+                      ),
+                      codeblockDecoration: BoxDecoration(
+                        color: Colors.white12,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
                   ),
                 ),
@@ -142,11 +171,14 @@ class ChatBubble extends StatelessWidget {
               size: 18,
             )
           : ClipOval(
-              child: Image.asset(
-                'assets/images/CHATBOT.webp', 
-                fit: BoxFit.cover,
-                width: 32,
-                height: 32,
+              child: Transform.scale(
+                scale: 1.2,
+                child: Image.asset(
+                  'assets/images/CHATBOT.webp', 
+                  fit: BoxFit.cover,
+                  width: 32,
+                  height: 32,
+                ),
               ),
             ),
     );

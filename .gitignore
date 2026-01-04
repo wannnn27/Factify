@@ -9,6 +9,11 @@
 .history
 .svn/
 
+# Environment Variables (API Keys - jangan di-commit!)
+.env
+.env.local
+.env.*.local
+
 # IntelliJ
 .idea/
 *.iml
@@ -67,3 +72,108 @@ gen/
 
 # Firebase
 lib/firebase_options.dart
+
+# ===========================================
+# Python ML Server (server/)
+# ===========================================
+
+# Virtual Environment
+server/venv/
+server/.venv/
+server/env/
+
+# Python bytecode
+server/__pycache__/
+server/**/__pycache__/
+server/*.py[cod]
+
+# Model weights (large files)
+server/models/weights/
+server/*.h5
+server/*.pkl
+
+# Uploaded files
+server/uploads/
+server/temp/
+
+# Logs
+server/*.log
+server/logs/
+
+# Cache
+server/.cache/
+server/.pytest_cache/
+
+# ===========================================
+# Python ML Server (server/)
+# ===========================================
+
+# Virtual Environment
+server/venv/
+server/.venv/
+server/env/
+server/.env/
+
+# Python bytecode
+server/__pycache__/
+server/**/__pycache__/
+server/*.py[cod]
+server/**/*.py[cod]
+server/*$py.class
+
+# Model weights (large files)
+server/models/weights/
+server/*.h5
+server/*.pkl
+server/*.pth
+server/*.pt
+server/*.onnx
+server/**/*.h5
+server/**/*.pkl
+
+# Uploaded files
+server/uploads/
+server/temp/
+
+# Logs
+server/*.log
+server/logs/
+
+# IDE
+server/.idea/
+server/.vscode/
+
+# Environment variables (if local)
+server/.env.local
+
+# Cache and temp
+server/.cache/
+server/.pytest_cache/
+server/htmlcov/
+server/.coverage
+
+# Jupyter
+server/.ipynb_checkpoints/
+server/**/.ipynb_checkpoints/
+
+# ===========================================
+# Additional Project Files to Ignore
+# ===========================================
+
+# Firebase cache
+.firebase/
+
+# Log and debug files
+*.log
+build_log.txt
+error_llm.txt
+
+# Test/debug scripts
+test_challenge_debug.py
+
+# Hugging Face deploy pycache
+hf_deploy/models/__pycache__/
+hf_deploy/**/__pycache__/
+
+# IDE specific
+.idx/

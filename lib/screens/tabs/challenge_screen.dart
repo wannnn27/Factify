@@ -1,5 +1,7 @@
-// file: lib/screens/tabs/challenge_screen.dart
 import 'package:flutter/material.dart';
+import 'package:factify/models/challenge_models.dart';
+import 'package:factify/services/challenge_service.dart';
+import 'package:factify/services/user_stats_service.dart';
 
 class ChallengeScreen extends StatefulWidget {
   const ChallengeScreen({super.key});
@@ -36,6 +38,18 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       'title': 'Ekonomi',
       'icon': Icons.trending_up,
       'description': 'Hoaks investasi, keuangan, dan bisnis yang menyesatkan.',
+    },
+    {
+      'id': 'kesehatan',
+      'title': 'Kesehatan',
+      'icon': Icons.local_hospital,
+      'description': 'Mitos kesehatan, obat ajaib, dan informasi medis yang salah.',
+    },
+    {
+      'id': 'politik',
+      'title': 'Politik',
+      'icon': Icons.policy,
+      'description': 'Disinformasi pemilu, kebijakan publik, dan tokoh politik.',
     },
   ];
 
@@ -148,7 +162,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            "Uji kemampuanmu dalam membedakan fakta dengan hoaks sekarang!",
+            "Uji kemampuanmu dalam membedakan fakta dengan hoaks sekarang! AI akan menilai ketajaman analisis kamu.",
             style: TextStyle(
               color: Colors.grey[400],
               fontSize: 13,
@@ -248,11 +262,14 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   }
 
   void _startChallenge(BuildContext context) {
+    // Get random case
+    final challengeCase = ChallengeService().getRandomCase(selectedCategories.toList());
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ChallengeDetailScreen(
-          selectedCategories: selectedCategories.toList(),
+          challengeCase: challengeCase,
         ),
       ),
     );
@@ -261,11 +278,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
 
 // CHALLENGE DETAIL SCREEN
 class ChallengeDetailScreen extends StatefulWidget {
-  final List<String> selectedCategories;
+  final ChallengeCase challengeCase;
 
   const ChallengeDetailScreen({
     super.key,
-    required this.selectedCategories,
+    required this.challengeCase,
   });
 
   @override
@@ -273,8 +290,10 @@ class ChallengeDetailScreen extends StatefulWidget {
 }
 
 class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
-  bool _latarBelakangExpanded = false;
-  bool _pokoMasalahExpanded = false;
+  bool _latarBelakangExpanded = true;
+  bool _pokoMasalahExpanded = true;
+  bool _isSubmitting = false;
+
   final TextEditingController _analysisController = TextEditingController();
   final TextEditingController _sourceController = TextEditingController();
 
@@ -306,7 +325,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Image.network(
-                        'https://images.unsplash.com/photo-1587370560942-ad2a04eabb6d?w=800',
+                        widget.challengeCase.imageUrl,
                         height: 180,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -330,8 +349,8 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     Wrap(
                       spacing: 8,
                       children: [
-                        _buildTag("Teknologi"),
-                        _buildTag("Sosial"),
+                        _buildTag(widget.challengeCase.topic),
+                        _buildTag("Challenge"),
                       ],
                     ),
                     
@@ -339,27 +358,27 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     
                     // LATAR BELAKANG
                     _buildExpandableSection(
-                      title: "Latar Belakang",
+                      title: "Latar Belakang / Konteks",
                       isExpanded: _latarBelakangExpanded,
                       onToggle: () => setState(() => _latarBelakangExpanded = !_latarBelakangExpanded),
-                      content: "Informasi keliru mengenai vaksin telah menyebar luas melalui platform media sosial, menyebabkan keraguan publik dan penurunan angka vaksinasi. Kasus ini menciptakan tantangan serius bagi kesehatan masyarakat dan diperkuat oleh algoritma menciptakan tantangan serius bagi kesehatan masyarakat.",
+                      content: widget.challengeCase.background,
                     ),
                     
                     const SizedBox(height: 12),
                     
                     // POKOK MASALAH
                     _buildExpandableSection(
-                      title: "Pokok Masalah",
+                      title: "Pertanyaan / Tugas",
                       isExpanded: _pokoMasalahExpanded,
                       onToggle: () => setState(() => _pokoMasalahExpanded = !_pokoMasalahExpanded),
-                      content: "Bagaimana misinformasi tentang vaksin menyebar di media sosial dan apa dampaknya terhadap kepercayaan publik?",
+                      content: widget.challengeCase.problem,
                     ),
                     
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     
-                    // TUGAS
+                    // INPUT FORM
                     const Text(
-                      "Tugas",
+                      "Jawaban & Analisis Kamu",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -368,7 +387,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Analisis situasi, bentuk kesimpulan, dan justifikasi dengan penelaran yang kuat serta sumber yang dapat dipercaya di kolom bawah ini.",
+                      "Berikan analismu. Apakah ini hoaks? Mengapa? Apa buktinya?",
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 13,
@@ -381,10 +400,10 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     // ANALYSIS INPUT
                     TextField(
                       controller: _analysisController,
-                      maxLines: 4,
+                      maxLines: 6,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: "Tuliskan analisis dan justifikasi Anda di sini...",
+                        hintText: "Tuliskan analisismu secara lengkap di sini...",
                         hintStyle: TextStyle(color: Colors.grey[600], fontSize: 13),
                         filled: true,
                         fillColor: const Color(0xFF2B3039),
@@ -403,7 +422,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       controller: _sourceController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: "Tambah Sumber... (contoh: https://website.com)",
+                        hintText: "Link Referensi / Sumber (Opsional)",
                         hintStyle: TextStyle(color: Colors.grey[600], fontSize: 13),
                         filled: true,
                         fillColor: const Color(0xFF2B3039),
@@ -421,23 +440,30 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => _submitAnswer(context),
+                        onPressed: _isSubmitting ? null : () => _submitAnswer(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF00C9A7),
+                          disabledBackgroundColor: const Color(0xFF2B3039),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          "Kirim Jawaban",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: _isSubmitting 
+                          ? const SizedBox(
+                              width: 24, 
+                              height: 24, 
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                            )
+                          : const Text(
+                              "Kirim Jawaban",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                       ),
                     ),
                   ],
@@ -460,16 +486,20 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             icon: const Icon(Icons.arrow_back, color: Colors.white),
           ),
           const Spacer(),
-          const Text(
-            "Informasi Vaksin",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: Text(
+              widget.challengeCase.title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           const Spacer(),
-          const SizedBox(width: 48),
+          const SizedBox(width: 48), // Balance for back button
         ],
       ),
     );
@@ -513,12 +543,14 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Icon(
@@ -544,7 +576,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     );
   }
 
-  void _submitAnswer(BuildContext context) {
+  Future<void> _submitAnswer(BuildContext context) async {
     if (_analysisController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Mohon isi analisis terlebih dahulu")),
@@ -552,18 +584,42 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ChallengeResultScreen(),
-      ),
-    );
+    setState(() => _isSubmitting = true);
+
+    try {
+      final result = await ChallengeService().evaluateAnswer(
+        widget.challengeCase,
+        _analysisController.text,
+        _sourceController.text,
+      );
+
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChallengeResultScreen(result: result),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal menilai jawaban: $e")),
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 }
 
-// CHALLENGE RESULT SCREEN
+// CHALLENGE RESULT SCREEN (DYNAMIC)
 class ChallengeResultScreen extends StatefulWidget {
-  const ChallengeResultScreen({super.key});
+  final ChallengeResult result;
+
+  const ChallengeResultScreen({
+    super.key,
+    required this.result,
+  });
 
   @override
   State<ChallengeResultScreen> createState() => _ChallengeResultScreenState();
@@ -571,7 +627,22 @@ class ChallengeResultScreen extends StatefulWidget {
 
 class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
   String selectedTab = 'ringkasan'; // ringkasan or rincian
-  bool _kekuatanExpanded = false;
+  bool _kekuatanExpanded = true;
+  bool _feedbackExpanded = true;
+  
+  // Note: Tab controller logic simplified for brevity
+  
+  @override
+  void initState() {
+    super.initState();
+    // Track challenge completion
+    _trackChallengeCompletion();
+  }
+  
+  Future<void> _trackChallengeCompletion() async {
+    final score = widget.result.score;
+    await userStats.completedChallenge(score);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -626,7 +697,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
           ),
           const Spacer(),
           const Text(
-            "Informasi Vaksin",
+            "Hasil Analisis",
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -636,11 +707,10 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
           const Spacer(),
           TextButton(
             onPressed: () {
-              // Done action
               Navigator.popUntil(context, (route) => route.isFirst);
             },
             child: const Text(
-              "Done",
+              "Selesai",
               style: TextStyle(
                 color: Color(0xFF00C9A7),
                 fontWeight: FontWeight.bold,
@@ -653,19 +723,28 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
   }
 
   Widget _buildScoreCircle() {
+    Color scoreColor;
+    if (widget.result.score >= 80) {
+      scoreColor = const Color(0xFF00C9A7); // Green
+    } else if (widget.result.score >= 50) {
+      scoreColor = Colors.orange; // Orange
+    } else {
+      scoreColor = Colors.redAccent; // Red
+    }
+
     return Container(
       width: 150,
       height: 150,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          colors: [Color(0xFF00C9A7), Color(0xFF0088CC)],
+        gradient: LinearGradient(
+          colors: [scoreColor, scoreColor.withOpacity(0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromRGBO(0, 201, 167, 0.3),
+            color: scoreColor.withOpacity(0.3),
             blurRadius: 20,
             spreadRadius: 5,
           ),
@@ -675,9 +754,9 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "80",
-              style: TextStyle(
+            Text(
+              "${widget.result.score}",
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
@@ -686,17 +765,23 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
             Text(
               "/100",
               style: TextStyle(
-                color: const Color.fromRGBO(255, 255, 255, 0.8),
+                color: Colors.white.withOpacity(0.8),
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Analisis yang Baik!",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(
+                widget.result.verdict,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -769,43 +854,51 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
   Widget _buildRingkasanContent() {
     return Column(
       children: [
-        _buildExpandableSection(
-          title: "Kekuatan",
-          icon: Icons.check_circle_outline,
-          isExpanded: _kekuatanExpanded,
-          onToggle: () => setState(() => _kekuatanExpanded = !_kekuatanExpanded),
-          content: "Kamu menunjukkan pemahaman tesis yang lebih dan menentukan topik primer dengan baik untuk mendukung poin-poin kritis. Argumenmu tersusun dengan baik dan mudah diikuti.",
-        ),
+        if (widget.result.strengths.isNotEmpty)
+          _buildExpandableList(
+            title: "Kekuatan",
+            icon: Icons.check_circle_outline,
+            items: widget.result.strengths,
+            isExpanded: _kekuatanExpanded,
+            onToggle: () => setState(() => _kekuatanExpanded = !_kekuatanExpanded),
+            color: const Color(0xFF00C9A7),
+          ),
+        
         const SizedBox(height: 12),
+        
+        if (widget.result.weaknesses.isNotEmpty)
+          _buildExpandableList(
+            title: "Perlu Ditingkatkan",
+            icon: Icons.warning_amber_rounded,
+            items: widget.result.weaknesses,
+            isExpanded: true,
+            onToggle: () {},
+            color: Colors.orangeAccent,
+          ),
+
+        const SizedBox(height: 12),
+
         _buildExpandableSection(
-          title: "Area yang Perlu Ditingkatkan",
-          icon: Icons.arrow_upward,
-          isExpanded: false,
-          onToggle: () {},
-          content: "Perlu pendalaman lebih lanjut pada aspek metodologi penelitian.",
+          title: "Feedback Mentor",
+          icon: Icons.school,
+          content: widget.result.feedback,
+          isExpanded: _feedbackExpanded,
+          onToggle: () => setState(() => _feedbackExpanded = !_feedbackExpanded),
         ),
       ],
     );
   }
 
   Widget _buildRincianContent() {
+    final scores = widget.result.detailedScores;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Penalaran & Logika",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        _buildProgressBar("Kejujuran", 0.9, Colors.blue),
-        const SizedBox(height: 8),
-        _buildProgressBar("Bukti", 0.75, Colors.orange),
-        const SizedBox(height: 8),
-        _buildProgressBar("Logika", 0.85, const Color(0xFF00C9A7)),
+        _buildSkillBar("Logika & Penalaran", scores['logic'] ?? 0),
+        const SizedBox(height: 16),
+        _buildSkillBar("Bukti & Fakta", scores['evidence'] ?? 0),
+        const SizedBox(height: 16),
+        _buildSkillBar("Kejelasan Argumen", scores['clarity'] ?? 0),
       ],
     );
   }
@@ -813,9 +906,9 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
   Widget _buildExpandableSection({
     required String title,
     required IconData icon,
+    required String content,
     required bool isExpanded,
     required VoidCallback onToggle,
-    required String content,
   }) {
     return GestureDetector(
       onTap: onToggle,
@@ -830,18 +923,17 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, color: const Color(0xFF00C9A7), size: 20),
+                Icon(icon, color: Colors.white, size: 20),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                const Spacer(),
                 Icon(
                   isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                   color: Colors.white,
@@ -865,24 +957,105 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
     );
   }
 
-  Widget _buildProgressBar(String label, double value, Color color) {
+    Widget _buildExpandableList({
+    required String title,
+    required IconData icon,
+    required List<String> items,
+    required bool isExpanded,
+    required VoidCallback onToggle,
+    required Color color,
+  }) {
+    return GestureDetector(
+      onTap: onToggle,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF2B3039),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.3), width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                Icon(
+                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+            if (isExpanded) ...[
+              const SizedBox(height: 12),
+              ...items.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("• ", style: TextStyle(color: color)),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: TextStyle(
+                          color: Colors.grey[300],
+                          fontSize: 13,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkillBar(String label, num value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "$value/100",
+              style: const TextStyle(
+                color: Color(0xFF00C9A7),
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value: value,
-            backgroundColor: const Color(0xFF2B3039),
-            valueColor: AlwaysStoppedAnimation<Color>(color),
+            value: value / 100,
+            backgroundColor: const Color(0xFF1E232C),
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00C9A7)),
             minHeight: 8,
           ),
         ),

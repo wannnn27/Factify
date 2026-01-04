@@ -1,4 +1,3 @@
-// lib/screens/tabs/education_screen.dart
 import 'package:flutter/material.dart';
 import '../../data/education_data.dart';
 import '../../widgets/education/video_card.dart';

@@ -1,4 +1,3 @@
-// lib/models/comment_model.dart
 class Comment {
   final String id;
   final String userName;

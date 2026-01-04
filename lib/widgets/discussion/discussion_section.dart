@@ -1,4 +1,3 @@
-// lib/widgets/discussion/discussion_section.dart
 import 'package:flutter/material.dart';
 import '../../models/comment_model.dart';
 import '../../services/comment_service.dart';

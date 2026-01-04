@@ -1,4 +1,3 @@
-// lib/widgets/education/article_detail_widget.dart
 import 'package:flutter/material.dart';
 import '../discussion/discussion_section.dart';
 
@@ -117,19 +116,111 @@ class _ArticleDetailWidgetState extends State<ArticleDetailWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icon Header
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: widget.article['color'].withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+            // Hero Image Header
+            if (widget.article['imageUrl'] != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Stack(
+                  children: [
+                    Image.network(
+                      widget.article['imageUrl'],
+                      height: 200,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: widget.article['color'].withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            widget.article['icon'] ?? Icons.article,
+                            color: Colors.white54,
+                            size: 48,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Gradient Overlay
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 80,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.7),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Author & Date in image
+                    Positioned(
+                      bottom: 12,
+                      left: 12,
+                      right: 12,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  widget.article['color'],
+                                  widget.article['color'].withOpacity(0.7),
+                                ],
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.person, size: 16, color: Colors.white),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            widget.article['author'] ?? 'Tim Factify',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const Spacer(),
+                          if (widget.article['publishDate'] != null)
+                            Text(
+                              widget.article['publishDate'],
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: widget.article['color'].withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  widget.article['icon'],
+                  color: widget.article['color'],
+                  size: 48,
+                ),
               ),
-              child: Icon(
-                widget.article['icon'],
-                color: widget.article['color'],
-                size: 48,
-              ),
-            ),
             const SizedBox(height: 20),
 
             // Title

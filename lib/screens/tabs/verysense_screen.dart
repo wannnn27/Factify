@@ -1,7 +1,6 @@
-// file: lib/screens/tabs/verysense_screen.dart
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+
 
 class VerysenseScreen extends StatefulWidget {
   const VerysenseScreen({super.key});
@@ -15,10 +14,9 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
   final TextEditingController _textController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
   final TextEditingController _videoUrlController = TextEditingController();
-  File? _selectedImage;
-  File? _selectedVideo;
   final ImagePicker _picker = ImagePicker();
   bool _isProcessingVideo = false;
+
 
   @override
   void initState() {
@@ -39,9 +37,6 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
     try {
       final XFile? image = await _picker.pickImage(source: source);
       if (image != null) {
-        setState(() {
-          _selectedImage = File(image.path);
-        });
         _showResultScreen('image');
       }
     } catch (e) {
@@ -55,14 +50,11 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
       
       final XFile? video = await _picker.pickVideo(
         source: source,
-        maxDuration: const Duration(minutes: 5), // Limit 5 minutes
+        maxDuration: const Duration(minutes: 5),
       );
       
       if (video != null) {
-        setState(() {
-          _selectedVideo = File(video.path);
-          _isProcessingVideo = false;
-        });
+        setState(() => _isProcessingVideo = false);
         _showResultScreen('video');
       } else {
         setState(() => _isProcessingVideo = false);
@@ -72,6 +64,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
       _showErrorSnackbar('Error memilih video: $e');
     }
   }
+
 
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -957,7 +950,6 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
   bool _showMainFindings = false;
   bool _showNeedAttention = false;
   bool _showAboutSource = false;
-  bool _showVideoAnalysis = false;
 
   String _getTitle() {
     switch (widget.analysisType) {

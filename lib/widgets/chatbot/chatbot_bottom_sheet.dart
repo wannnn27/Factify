@@ -1,4 +1,3 @@
-// file: lib/widgets/chatbot/chatbot_bottom_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:factify/models/chat_message.dart';
 import 'package:factify/services/chatbot_service.dart';
@@ -42,7 +41,6 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
     );
     _animationController.forward();
 
-    // Welcome message dari Facti
     _messages.add(ChatMessage.bot(
       'Halo! Saya Facti, asisten digital Anda. Saya siap membantu Anda dengan literasi digital, keamanan online, dan cara mengenali informasi yang benar. Ada yang bisa saya bantu? 😊',
     ));
@@ -72,7 +70,6 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    // Tambahkan pesan user
     setState(() {
       _messages.add(ChatMessage.user(text));
       _messageController.clear();
@@ -81,7 +78,6 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
     });
     _scrollToBottom();
 
-    // Panggil Grok API melalui service
     try {
       final response = await _chatbotService.getResponse(text, _messages);
 
@@ -263,7 +259,6 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
     );
   }
 
-  // === Header, Empty State, dan Input Area tetap sama seperti aslinya ===
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -312,8 +307,8 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                   ],
                 ),
                 child: ClipOval(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
+                  child: Transform.scale(
+                    scale: 1.2,
                     child: Image.asset(
                       'assets/images/CHATBOT.webp',
                       fit: BoxFit.cover,
@@ -390,8 +385,8 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
               ],
             ),
             child: ClipOval(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
+              child: Transform.scale(
+                scale: 1.2,
                 child: Image.asset('assets/images/CHATBOT.webp', fit: BoxFit.cover),
               ),
             ),

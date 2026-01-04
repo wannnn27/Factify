@@ -1,5 +1,5 @@
-// file: lib/main.dart
 import 'package:factify/screens/main_navigation.dart';
+import 'package:factify/services/guest_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,16 +13,16 @@ void main() async {
   try {
     // Load .env file
     await dotenv.load(fileName: ".env");
-    print(".env file loaded successfully");
-    print("GEMINI_API_KEY length: ${dotenv.env['GEMINI_API_KEY']?.length ?? 0}");
   } catch (e) {
-    print("Error loading .env file: $e");
     // Continue running app even if .env fails to load
   }
   
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Initialize guest service
+  await guestService.init();
   
   runApp(const MyApp());
 }
@@ -62,10 +62,17 @@ class AuthWrapper extends StatelessWidget {
           );
         }
         
+        // If user is authenticated, go to main navigation
         if (snapshot.hasData && snapshot.data != null) {
           return const MainNavigationScreen();
         }
         
+        // Check if guest mode is enabled
+        if (guestService.isGuestMode) {
+          return const MainNavigationScreen();
+        }
+        
+        // Otherwise, show splash/onboarding
         return const SplashScreen();
       },
     );

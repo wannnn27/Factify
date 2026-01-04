@@ -1,4 +1,3 @@
-// lib/widgets/discussion/comment_widget.dart
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../models/comment_model.dart';

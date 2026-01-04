@@ -1,4 +1,3 @@
-// file: lib/screens/tabs/home/learn_more_screen.dart
 import 'package:flutter/material.dart';
 
 class LearnMoreScreen extends StatelessWidget {

@@ -1,4 +1,3 @@
-// lib/screens/article_detail_screen.dart
 import 'package:flutter/material.dart';
 import '../discussion/discussion_section.dart';
 

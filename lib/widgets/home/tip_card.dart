@@ -1,4 +1,3 @@
-// file: lib/widgets/home/tip_card.dart
 import 'package:flutter/material.dart';
 
 class TipCard extends StatelessWidget {

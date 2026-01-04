@@ -1,4 +1,3 @@
-// file: lib/screens/tabs/home/article_detail_screen.dart
 import 'package:flutter/material.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
@@ -61,6 +60,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
         return const Color(0xFFFFD93D);
       case 'digital ethics':
         return const Color(0xFF6C5CE7);
+      case 'ai & technology':
+        return const Color(0xFF9B59B6);
       default:
         return const Color(0xFF4ECDC4);
     }
@@ -216,19 +217,34 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
-                      // Gambar utama dari asset lokal (berbeda per artikel)
-                      Image.asset(
-                        imagePath,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: categoryColor.withOpacity(0.4),
-                            child: const Center(
-                              child: Icon(Icons.broken_image, color: Colors.white70, size: 80),
+                      // Gambar utama - support both network and asset
+                      imagePath.startsWith('http')
+                          ? Image.network(
+                              imagePath,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: categoryColor.withOpacity(0.4),
+                                  child: const Center(
+                                    child: Icon(Icons.article, color: Colors.white70, size: 80),
+                                  ),
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              imagePath,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: categoryColor.withOpacity(0.4),
+                                  child: const Center(
+                                    child: Icon(Icons.article, color: Colors.white70, size: 80),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                       // Overlay gradient agar konten atas terbaca
                       Container(
                         decoration: BoxDecoration(

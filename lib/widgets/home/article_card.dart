@@ -1,4 +1,3 @@
-// file: lib/widgets/home/article_card.dart
 import 'package:flutter/material.dart';
 
 class ArticleCard extends StatelessWidget {
@@ -19,6 +18,8 @@ class ArticleCard extends StatelessWidget {
         return const Color(0xFFFFD93D);
       case 'digital ethics':
         return const Color(0xFF6C5CE7);
+      case 'ai & technology':
+        return const Color(0xFF9B59B6);
       default:
         return const Color(0xFF4ECDC4);
     }
@@ -60,8 +61,7 @@ class ArticleCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image section - Check if image path exists
-              ClipRRect(
+                ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -72,17 +72,25 @@ class ArticleCard extends StatelessWidget {
                   child: imagePath != null && imagePath.isNotEmpty
                       ? Stack(
                           children: [
-                            // Real image
                             Positioned.fill(
-                              child: Image.asset(
-                                imagePath,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return _buildPlaceholder(categoryColor);
-                                },
-                              ),
+                              child: imagePath.startsWith('http')
+                                  ? Image.network(
+                                      imagePath,
+                                      fit: BoxFit.cover,
+                                      cacheHeight: 320,
+                                      cacheWidth: 400,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return _buildPlaceholder(categoryColor);
+                                      },
+                                    )
+                                  : Image.asset(
+                                      imagePath,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return _buildPlaceholder(categoryColor);
+                                      },
+                                    ),
                             ),
-                            // Gradient overlay
                             Positioned.fill(
                               child: Container(
                                 decoration: BoxDecoration(
@@ -97,7 +105,6 @@ class ArticleCard extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Category badge
                             Positioned(
                               top: 12,
                               left: 12,
@@ -132,7 +139,6 @@ class ArticleCard extends StatelessWidget {
                       : _buildPlaceholder(categoryColor),
                 ),
               ),
-              // Content
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -222,13 +228,11 @@ class ArticleCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Pattern overlay
           Positioned.fill(
             child: CustomPaint(
               painter: PatternPainter(color: categoryColor),
             ),
           ),
-          // Category badge
           Positioned(
             top: 12,
             left: 12,
@@ -258,7 +262,6 @@ class ArticleCard extends StatelessWidget {
               ),
             ),
           ),
-          // Icon
           Center(
             child: Container(
               padding: const EdgeInsets.all(20),
@@ -279,7 +282,6 @@ class ArticleCard extends StatelessWidget {
   }
 }
 
-// Custom painter untuk pattern di background
 class PatternPainter extends CustomPainter {
   final Color color;
 

@@ -1,4 +1,3 @@
-// file: lib/screens/auth/forgot_password_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/custom_textfield.dart';
 import '../../widgets/primary_button.dart';

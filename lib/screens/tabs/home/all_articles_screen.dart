@@ -1,4 +1,3 @@
-// file: lib/screens/tabs/home/all_articles_screen.dart
 import 'package:flutter/material.dart';
 import 'package:factify/screens/tabs/home/article_detail_screen.dart';
 import 'package:factify/widgets/home/article_card.dart';

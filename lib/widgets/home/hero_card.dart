@@ -1,4 +1,3 @@
-// file: lib/widgets/home/hero_card.dart
 import 'package:flutter/material.dart';
 
 class HeroCard extends StatelessWidget {

@@ -1,4 +1,3 @@
-// file: lib/widgets/home/notification_bottom_sheet.dart
 import 'package:flutter/material.dart';
 
 void showNotificationBottomSheet(BuildContext context) {

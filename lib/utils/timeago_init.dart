@@ -1,4 +1,3 @@
-// lib/utils/timeago_init.dart
 import 'package:timeago/timeago.dart' as timeago;
 
 class TimeAgoInit {

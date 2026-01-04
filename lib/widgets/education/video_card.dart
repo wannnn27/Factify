@@ -1,4 +1,3 @@
-// lib/widgets/education/video_card.dart
 import 'package:flutter/material.dart';
 
 class VideoCard extends StatelessWidget {
@@ -41,24 +40,25 @@ class VideoCard extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
-                    child: Image.asset(
-                      video['thumbnail'],
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[800],
-                          child: const Center(
-                            child: Icon(
-                              Icons.video_library,
-                              color: Colors.grey,
-                              size: 40,
+                    child: video['thumbnail'].toString().startsWith('http')
+                        ? Image.network(
+                            video['thumbnail'],
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                            cacheHeight: 220,
+                            cacheWidth: 360,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              color: Colors.grey[800],
+                              child: const Icon(Icons.video_library, color: Colors.grey, size: 32),
+                            ),
+                          )
+                        : Container(
+                            color: Colors.grey[800],
+                            child: const Center(
+                              child: Icon(Icons.video_library, color: Colors.grey, size: 32),
                             ),
                           ),
-                        );
-                      },
-                    ),
                   ),
                   
                   // Play Icon

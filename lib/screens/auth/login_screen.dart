@@ -1,5 +1,5 @@
-// file: lib/screens/auth/login_screen.dart
 import 'package:factify/screens/main_navigation.dart';
+import 'package:factify/services/guest_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
@@ -48,6 +48,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (userCredential != null) {
+        // Disable guest mode on successful login
+        await guestService.disableGuestMode();
+        
         _showSuccessSnackBar("Login berhasil! Selamat datang kembali");
         
         // Navigasi ke halaman utama setelah login berhasil
@@ -80,6 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (userCredential != null) {
+        // Disable guest mode on successful login
+        await guestService.disableGuestMode();
+        
         _showSuccessSnackBar("Login dengan Google berhasil!");
         
         Navigator.pushAndRemoveUntil(

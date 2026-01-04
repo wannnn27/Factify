@@ -1,4 +1,3 @@
-// file: lib/services/auth_service.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -181,8 +180,16 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     try {
-      // Sign out dari Google terlebih dahulu
-      await _googleSignIn.signOut();
+      // Coba sign out dari Google (jika pernah login via Google)
+      // Wrap dalam try-catch terpisah karena bisa error jika Google Sign In
+      // belum pernah diinisialisasi (misalnya user login via email/password)
+      try {
+        await _googleSignIn.signOut();
+      } catch (googleError) {
+        // Abaikan error Google Sign In - mungkin user tidak login via Google
+        print('Google sign out skipped: $googleError');
+      }
+      
       // Kemudian sign out dari Firebase
       await _auth.signOut();
     } catch (e) {

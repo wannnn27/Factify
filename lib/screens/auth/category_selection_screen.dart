@@ -1,4 +1,3 @@
-// file: lib/screens/auth/category_selection_screen.dart
 import 'package:flutter/material.dart';
 import '../../widgets/primary_button.dart';
 import '../main_navigation.dart';

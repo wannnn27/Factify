@@ -1,4 +1,3 @@
-// file: lib/widgets/home/search_filter_bottom_sheet.dart
 import 'package:flutter/material.dart';
 
 void showSearchFilterBottomSheet(BuildContext context) {
