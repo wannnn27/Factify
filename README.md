@@ -88,14 +88,4 @@ Dokumentasi teknis disusun secara terstruktur untuk memudahkan pengembangan dan 
 *   **Latensi:** Waktu respons verifikasi untuk konten video terkadang masih memerlukan optimasi lebih lanjut.
 *   **Ketergantungan API:** Sistem sangat bergantung pada ketersediaan layanan pihak ketiga (Gemini Web API), yang memerlukan strategi mitigasi jika terjadi gangguan layanan.
 
-## Langkah Uraian Checklist
 
-| Komponen | Status | Keterangan |
-| :--- | :---: | :--- |
-| **Problem Statement** | ☑ | Rumusan masalah, target pengguna, dan nilai solusi telah didefinisikan. |
-| **Dataset** | ☑ | Sumber data input dan integrasi knowledge base telah dijelaskan. |
-| **EDA & Visualisasi** | ☑ | Analisis karakteristik data misinformasi telah dilakukan. |
-| **Preprocessing** | ☑ | Pipa pemrosesan data untuk teks dan multimedia telah diimplementasikan. |
-| **Modeling** | ☑ | Arsitektur model (Gemini + Backend Custom) telah diterapkan dan dievaluasi. |
-| **Deployment** | ☑ | Aplikasi siap dijalankan di lingkungan lokal multi-platform. |
-| **Dokumentasi** | ☑ | README dan dokumentasi kode tersedia. |
