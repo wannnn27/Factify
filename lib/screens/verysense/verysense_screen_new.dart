@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -65,7 +64,7 @@ class _VerysenseScreenNewState extends State<VerysenseScreenNew>
             verifyFunction: () => VerysenseService.verifyImageBytes(bytes, image.name),
           );
         } else {
-          _verifyImage(File(image.path));
+          _verifyImage(image);
         }
       }
     } catch (e) {
@@ -91,7 +90,7 @@ class _VerysenseScreenNewState extends State<VerysenseScreenNew>
             verifyFunction: () => VerysenseService.verifyVideoBytes(bytes, video.name),
           );
         } else {
-          _verifyVideo(File(video.path));
+        _verifyVideo(video);
         }
       } else {
         setState(() => _isProcessingVideo = false);
@@ -136,7 +135,7 @@ class _VerysenseScreenNewState extends State<VerysenseScreenNew>
   }
 
   /// Verify image file
-  Future<void> _verifyImage(File imageFile) async {
+  Future<void> _verifyImage(XFile imageFile) async {
     await _performVerification(
       contentType: ContentType.image,
       verifyFunction: () => VerysenseService.verifyImageFile(imageFile),
@@ -144,7 +143,7 @@ class _VerysenseScreenNewState extends State<VerysenseScreenNew>
   }
 
   /// Verify video file
-  Future<void> _verifyVideo(File videoFile) async {
+  Future<void> _verifyVideo(XFile videoFile) async {
     await _performVerification(
       contentType: ContentType.video,
       verifyFunction: () => VerysenseService.verifyVideoFile(videoFile),
