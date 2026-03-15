@@ -84,7 +84,7 @@ def verify_text():
         if not text or not text.strip():
             return jsonify({'error': 'Text cannot be empty'}), 400
         
-        if len(text) > 50000:  # 50K character limit
+        if len(text) > 50000:  
             return jsonify({'error': 'Text too long (max 50000 characters)'}), 400
         
         result = engine.verify_text(text)

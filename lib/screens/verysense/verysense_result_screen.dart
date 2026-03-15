@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/verification_result.dart';
 import '../../widgets/verysense/result_card.dart';
 import '../../services/user_stats_service.dart';
@@ -131,6 +131,180 @@ Dianalisis oleh Factify - Aplikasi Literasi Digital
     ''';
 
     Share.share(shareText, subject: 'Hasil Verifikasi Factify');
+  }
+
+  void _showCredibleSourcesBottomSheet() {
+    HapticFeedback.lightImpact();
+    
+    String rawQuery = widget.result.source;
+    if (rawQuery.isEmpty || rawQuery == 'Sumber tidak diketahui' || rawQuery == 'Gambar yang diupload' || rawQuery == 'Video yang diupload' || rawQuery.startsWith('http')) {
+       // Extract keywords from AI summary or findings if source is not descriptive
+       rawQuery = widget.result.mainFindings.replaceAll('\n', ' ').replaceAll('•', '').trim();
+       if (rawQuery.isEmpty) rawQuery = "Berita Viral Terbaru";
+    }
+    
+    // Trim query to max 100 characters for better search performance
+    String query = rawQuery.length > 100 ? rawQuery.substring(0, 100) : rawQuery;
+    final encodedQuery = Uri.encodeComponent(query);
+
+    final sources = [
+      {
+        'name': 'CekFakta.com',
+        'desc': 'Kolaborasi media verifikasi fakta tingkat nasional.',
+        'icon': Icons.verified_user_rounded,
+        'color': const Color(0xFF4ECDC4),
+        'url': 'https://cekfakta.com/?s=$encodedQuery',
+      },
+      {
+        'name': 'TurnBackHoax.id',
+        'desc': 'Database arsip anti-hoax independen oleh MAFINDO.',
+        'icon': Icons.security_rounded,
+        'color': const Color(0xFFFF9F43),
+        'url': 'https://turnbackhoax.id/?s=$encodedQuery',
+      },
+      {
+        'name': 'Kompas Cek Fakta',
+        'desc': 'Liputan khusus pengecekan fakta dari Kompas.com.',
+        'icon': Icons.article_rounded,
+        'color': const Color(0xFF54A0FF),
+        'url': 'https://www.google.com/search?q=site:kompas.com+cek+fakta+$encodedQuery',
+      },
+      {
+        'name': 'Google News',
+        'desc': 'Telusuri konteks artikel ini di berbagai berita teratas.',
+        'icon': Icons.public_rounded,
+        'color': const Color(0xFFEE5253),
+        'url': 'https://news.google.com/search?q=$encodedQuery',
+      },
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF141428),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          border: Border.all(color: Colors.white.withAlpha(26)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(128),
+              blurRadius: 40,
+              offset: const Offset(0, -10),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(51),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Baca dari Sumber Kredibel',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Pilih platform untuk mencari kebenaran konteks ini',
+                style: TextStyle(
+                  color: Colors.white.withAlpha(153),
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ...sources.map((v) => _buildSourceListTile(
+                    name: v['name'] as String,
+                    desc: v['desc'] as String,
+                    icon: v['icon'] as IconData,
+                    color: v['color'] as Color,
+                    url: v['url'] as String,
+                  )),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSourceListTile({
+    required String name,
+    required String desc,
+    required IconData icon,
+    required Color color,
+    required String url,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(13),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withAlpha(26)),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: color.withAlpha(38),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 24),
+        ),
+        title: Text(
+          name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          desc,
+          style: TextStyle(
+            color: Colors.white.withAlpha(128),
+            fontSize: 12,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: Colors.white.withAlpha(102),
+          size: 16,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        onTap: () async {
+          HapticFeedback.lightImpact();
+          Navigator.pop(context);
+          
+          final uri = Uri.parse(url);
+          try {
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            } else {
+              _showSnackbar('Tidak dapat membuka tautan ini.');
+            }
+          } catch (e) {
+            _showSnackbar('Terjadi kesalahan saat membuka platform tujuan.');
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -839,10 +1013,10 @@ Dianalisis oleh Factify - Aplikasi Literasi Digital
         const SizedBox(height: 16),
         _buildActionCard(
           'Baca dari sumber lain',
-          'Bandingkan informasi dengan media lain',
+          'Baca dan cari perbandingan rujukan di sumber terpercaya',
           Icons.open_in_new_rounded,
           const Color(0xFF74B9FF),
-          () => _showSnackbar('Membuka sumber alternatif...'),
+          _showCredibleSourcesBottomSheet,
         ),
         const SizedBox(height: 12),
         _buildActionCard(

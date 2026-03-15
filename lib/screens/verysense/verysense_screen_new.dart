@@ -84,7 +84,15 @@ class _VerysenseScreenNewState extends State<VerysenseScreenNew>
 
       if (video != null) {
         setState(() => _isProcessingVideo = false);
-        _verifyVideo(File(video.path));
+        if (kIsWeb) {
+          final bytes = await video.readAsBytes();
+          await _performVerification(
+            contentType: ContentType.video,
+            verifyFunction: () => VerysenseService.verifyVideoBytes(bytes, video.name),
+          );
+        } else {
+          _verifyVideo(File(video.path));
+        }
       } else {
         setState(() => _isProcessingVideo = false);
       }

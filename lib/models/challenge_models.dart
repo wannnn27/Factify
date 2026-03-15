@@ -1,3 +1,44 @@
+/// Enum untuk tingkat kesulitan challenge
+enum ChallengeDifficulty {
+  pemula,     // Level 1 - untuk Pelajar
+  menengah,   // Level 2 - untuk Mahasiswa
+  lanjutan,   // Level 3 - untuk Pekerja/Profesional
+}
+
+extension ChallengeDifficultyExtension on ChallengeDifficulty {
+  int get level {
+    switch (this) {
+      case ChallengeDifficulty.pemula:
+        return 1;
+      case ChallengeDifficulty.menengah:
+        return 2;
+      case ChallengeDifficulty.lanjutan:
+        return 3;
+    }
+  }
+
+  String get displayName {
+    switch (this) {
+      case ChallengeDifficulty.pemula:
+        return 'Pemula';
+      case ChallengeDifficulty.menengah:
+        return 'Menengah';
+      case ChallengeDifficulty.lanjutan:
+        return 'Lanjutan';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case ChallengeDifficulty.pemula:
+        return 'Cocok untuk pelajar, kasus sederhana dengan petunjuk jelas';
+      case ChallengeDifficulty.menengah:
+        return 'Untuk mahasiswa, membutuhkan analisis lebih mendalam';
+      case ChallengeDifficulty.lanjutan:
+        return 'Untuk profesional, kasus kompleks dan nuansa halus';
+    }
+  }
+}
 
 class ChallengeCase {
   final String id;
@@ -7,6 +48,7 @@ class ChallengeCase {
   final String background;
   final String problem;
   final String solution; // Hidden from user, sent to AI for verification
+  final ChallengeDifficulty difficulty; // Tingkat kesulitan challenge
 
   const ChallengeCase({
     required this.id,
@@ -16,6 +58,7 @@ class ChallengeCase {
     required this.background,
     required this.problem,
     required this.solution,
+    this.difficulty = ChallengeDifficulty.pemula, // Default pemula
   });
 
   Map<String, dynamic> toJson() {
@@ -27,6 +70,7 @@ class ChallengeCase {
       'background': background,
       'problem': problem,
       'solution': solution,
+      'difficulty': difficulty.level,
     };
   }
 }

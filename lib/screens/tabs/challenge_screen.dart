@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:factify/models/challenge_models.dart';
+import 'package:factify/models/user_category.dart';
 import 'package:factify/services/challenge_service.dart';
+import 'package:factify/services/auth_service.dart';
 import 'package:factify/services/user_stats_service.dart';
 
 class ChallengeScreen extends StatefulWidget {
@@ -13,6 +16,37 @@ class ChallengeScreen extends StatefulWidget {
 class _ChallengeScreenState extends State<ChallengeScreen> {
   // Selected categories
   Set<String> selectedCategories = {};
+  
+  // User category from Firestore
+  UserCategory _userCategory = UserCategory.pelajar; // Default
+  bool _isLoadingCategory = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserCategory();
+  }
+
+  Future<void> _loadUserCategory() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userData = await AuthService().getUserData(user.uid);
+        if (userData != null && userData['userCategory'] != null) {
+          setState(() {
+            _userCategory = UserCategoryExtension.fromFirestoreValue(userData['userCategory']);
+            _isLoadingCategory = false;
+          });
+          return;
+        }
+      }
+    } catch (e) {
+      print('Error loading user category: $e');
+    }
+    setState(() {
+      _isLoadingCategory = false;
+    });
+  }
 
   final List<Map<String, dynamic>> categories = [
     {
@@ -169,10 +203,86 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
             ),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 12),
+          // User Level Badge
+          _buildUserLevelBadge(),
         ],
       ),
     );
   }
+
+  Widget _buildUserLevelBadge() {
+    if (_isLoadingCategory) {
+      return const SizedBox(
+        height: 32,
+        child: Center(
+          child: SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Color(0xFF00C9A7),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Color badgeColor;
+    String levelText;
+    IconData levelIcon;
+    
+    switch (_userCategory) {
+      case UserCategory.pelajar:
+        badgeColor = const Color(0xFF4CAF50);
+        levelText = 'Level Pemula';
+        levelIcon = Icons.school;
+        break;
+      case UserCategory.mahasiswa:
+        badgeColor = const Color(0xFFFF9800);
+        levelText = 'Level Menengah';
+        levelIcon = Icons.account_balance;
+        break;
+      case UserCategory.pekerja:
+        badgeColor = const Color(0xFFE91E63);
+        levelText = 'Level Lanjutan';
+        levelIcon = Icons.work;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: badgeColor.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: badgeColor, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(levelIcon, size: 16, color: badgeColor),
+          const SizedBox(width: 8),
+          Text(
+            levelText,
+            style: TextStyle(
+              color: badgeColor,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '(${_userCategory.displayName})',
+            style: TextStyle(
+              color: badgeColor.withOpacity(0.8),
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildCategoryGrid() {
     return GridView.builder(
@@ -262,14 +372,18 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   }
 
   void _startChallenge(BuildContext context) {
-    // Get random case
-    final challengeCase = ChallengeService().getRandomCase(selectedCategories.toList());
+    // Get random case based on user category for appropriate difficulty
+    final challengeCase = ChallengeService().getRandomCaseByDifficulty(
+      selectedCategories.toList(),
+      _userCategory,
+    );
 
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ChallengeDetailScreen(
           challengeCase: challengeCase,
+          userCategory: _userCategory, // Pass category for display
         ),
       ),
     );
@@ -279,10 +393,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
 // CHALLENGE DETAIL SCREEN
 class ChallengeDetailScreen extends StatefulWidget {
   final ChallengeCase challengeCase;
+  final UserCategory? userCategory; // Optional, for display purposes
 
   const ChallengeDetailScreen({
     super.key,
     required this.challengeCase,
+    this.userCategory,
   });
 
   @override
@@ -350,6 +466,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       spacing: 8,
                       children: [
                         _buildTag(widget.challengeCase.topic),
+                        _buildDifficultyTag(widget.challengeCase.difficulty),
                         _buildTag("Challenge"),
                       ],
                     ),
@@ -514,6 +631,42 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       ),
       child: Text(
         text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDifficultyTag(ChallengeDifficulty difficulty) {
+    Color bgColor;
+    String label;
+    
+    switch (difficulty) {
+      case ChallengeDifficulty.pemula:
+        bgColor = const Color(0xFF4CAF50); // Green
+        label = '🌱 Pemula';
+        break;
+      case ChallengeDifficulty.menengah:
+        bgColor = const Color(0xFFFF9800); // Orange
+        label = '📚 Menengah';
+        break;
+      case ChallengeDifficulty.lanjutan:
+        bgColor = const Color(0xFFE91E63); // Pink/Red
+        label = '🎯 Lanjutan';
+        break;
+    }
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
         style: const TextStyle(
           color: Colors.white,
           fontSize: 11,

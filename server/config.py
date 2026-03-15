@@ -16,7 +16,7 @@ class Config:
     MODEL_DIR = os.path.join(os.path.dirname(__file__), 'models', 'trained')
     
     # Text Analysis Settings
-    TEXT_MODEL_NAME = 'indobenchmark/indobert-base-p1'  # Indonesian BERT
+    TEXT_MODEL_NAME = 'indobenchmark/indobert-base-p1'  
     MAX_TEXT_LENGTH = 512
     
     # Image Analysis Settings
@@ -24,8 +24,8 @@ class Config:
     MAX_IMAGE_SIZE = (1024, 1024)
     
     # Video Analysis Settings
-    VIDEO_FRAME_SAMPLE_RATE = 30  # Sample every 30 frames
-    MAX_VIDEO_DURATION = 300  # 5 minutes in seconds
+    VIDEO_FRAME_SAMPLE_RATE = 30  
+    MAX_VIDEO_DURATION = 300  
     
     # URL Analysis Settings
     TRUSTED_DOMAINS = [

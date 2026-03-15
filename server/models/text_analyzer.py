@@ -467,7 +467,7 @@ class TextAnalyzer(BaseAnalyzer):
         try:
             # Tokenize
             inputs = self.tokenizer(
-                text[:512],  # Limit length
+                text[:512],  
                 return_tensors="pt",
                 truncation=True,
                 padding=True,

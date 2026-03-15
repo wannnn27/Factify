@@ -249,7 +249,8 @@ class VerificationEngine:
         # Route to appropriate analyzer
         if request.content_type == ContentType.TEXT:
             result = self.text_analyzer.analyze(request.content)
-            source = f"Teks ({len(request.content)} karakter)"
+            excerpt = request.content[:150].replace('\n', ' ')
+            source = f"{excerpt}..." if len(request.content) > 150 else excerpt
         elif request.content_type == ContentType.URL:
             result = self.url_analyzer.analyze(request.content)
             source = request.content[:100]

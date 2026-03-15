@@ -11,10 +11,10 @@ import json
 @dataclass
 class AnalysisResult:
     """Data class untuk hasil analisis"""
-    score: float  # 0-100
-    confidence: float  # 0-1
-    status: str  # 'kredibel', 'cukup_kredibel', 'perlu_perhatian', 'tidak_kredibel'
-    status_color: str  # hex color
+    score: float  
+    confidence: float  
+    status: str  
+    status_color: str  
     findings: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -41,13 +41,13 @@ class AnalysisResult:
     def get_status_from_score(score: float) -> tuple:
         """Return (status, color) based on score"""
         if score >= 80:
-            return ('kredibel', '#4ECDC4')  # Green/Teal
+            return ('kredibel', '#4ECDC4')  
         elif score >= 60:
-            return ('cukup_kredibel', '#4ECDC4')  # Teal
+            return ('cukup_kredibel', '#4ECDC4')  
         elif score >= 40:
-            return ('perlu_perhatian', '#FFD93D')  # Yellow
+            return ('perlu_perhatian', '#FFD93D')  
         else:
-            return ('tidak_kredibel', '#FF6B6B')  # Red
+            return ('tidak_kredibel', '#FF6B6B') 
 
 
 class BaseAnalyzer(ABC):

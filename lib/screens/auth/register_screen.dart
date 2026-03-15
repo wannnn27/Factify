@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
+import '../../models/user_category.dart';
 import '../../widgets/custom_textfield.dart';
 import '../../widgets/primary_button.dart';
 
@@ -35,6 +36,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _emailError;
   String? _phoneError;
   String? _usernameError;
+
+  // User category selection
+  UserCategory? _selectedCategory;
 
   @override
   void initState() {
@@ -127,6 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _hasNumber &&
         _hasSpecialChar &&
         _passwordsMatch &&
+        _selectedCategory != null && // Kategori harus dipilih
         _agreeToTerms;
   }
 
@@ -148,12 +153,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      // Buat akun baru
+      // Buat akun baru dengan kategori pengguna
       UserCredential? userCredential = await _authService.signUpWithEmailAndPassword(
         _emailController.text.trim(),
         _passwordController.text,
         _usernameController.text.trim(),
         _phoneController.text.trim(),
+        userCategory: _selectedCategory,
       );
 
       if (!mounted) return;
@@ -276,7 +282,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
+
+              // CATEGORY SELECTION SECTION
+              const Text(
+                "Saya adalah seorang...",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildCategorySelection(),
+
+              const SizedBox(height: 24),
+
 
               CustomTextField(
                 controller: _usernameController,
@@ -507,5 +528,81 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildCategorySelection() {
+    return Row(
+      children: UserCategory.values.map((category) {
+        final isSelected = _selectedCategory == category;
+        return Expanded(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedCategory = category;
+              });
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: EdgeInsets.only(
+                right: category != UserCategory.pekerja ? 8 : 0,
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              decoration: BoxDecoration(
+                color: isSelected 
+                    ? const Color(0xFF00C9A7).withOpacity(0.15)
+                    : const Color(0xFF2B3039),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected 
+                      ? const Color(0xFF00C9A7) 
+                      : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    _getCategoryIcon(category),
+                    color: isSelected 
+                        ? const Color(0xFF00C9A7) 
+                        : Colors.grey[400],
+                    size: 28,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    category.displayName,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey[400],
+                      fontSize: 13,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (isSelected) ...[
+                    const SizedBox(height: 4),
+                    Icon(
+                      Icons.check_circle,
+                      color: const Color(0xFF00C9A7),
+                      size: 16,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  IconData _getCategoryIcon(UserCategory category) {
+    switch (category) {
+      case UserCategory.pelajar:
+        return Icons.school;
+      case UserCategory.mahasiswa:
+        return Icons.account_balance;
+      case UserCategory.pekerja:
+        return Icons.work;
+    }
   }
 }

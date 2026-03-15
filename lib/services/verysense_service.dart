@@ -130,7 +130,7 @@ class VerysenseService {
       
       final bytes = await imageFile.readAsBytes() as Uint8List;
       final path = imageFile.path as String;
-      return verifyImageBytes(bytes, path.split('/').last);
+      return verifyImageBytes(bytes, path.split(RegExp(r'[/\\]')).last);
     } catch (e) {
       debugPrint('[VerysenseService] Verify image file error: $e');
       rethrow;
@@ -196,7 +196,7 @@ class VerysenseService {
     }
   }
 
-  /// Verifikasi video dari file (mobile only - use verifyVideoUrl for web)
+  /// Verifikasi video dari file (mobile only - use verifyVideoBytes for web)
   static Future<VerificationResult> verifyVideoFile(dynamic videoFile) async {
     try {
       debugPrint('[VerysenseService] Verifying video file');
@@ -204,12 +204,24 @@ class VerysenseService {
       final path = videoFile.path as String;
       final bytes = await videoFile.readAsBytes() as Uint8List;
       
+      return verifyVideoBytes(bytes, path.split(RegExp(r'[/\\]')).last);
+    } catch (e) {
+      debugPrint('[VerysenseService] Verify video file error: $e');
+      rethrow;
+    }
+  }
+
+  /// Verifikasi video dari bytes (multipart upload, untuk web & mobile)
+  static Future<VerificationResult> verifyVideoBytes(Uint8List bytes, String filename) async {
+    try {
+      debugPrint('[VerysenseService] Verifying video bytes (${bytes.length} bytes)');
+      
       final request = http.MultipartRequest('POST', Uri.parse('$_baseUrl/verify/video'));
       
       request.files.add(http.MultipartFile.fromBytes(
         'video',
         bytes,
-        filename: path.split('/').last,
+        filename: filename,
       ));
 
       final streamedResponse = await request.send().timeout(const Duration(minutes: 5));
@@ -217,7 +229,7 @@ class VerysenseService {
 
       return _handleResponse(response);
     } catch (e) {
-      debugPrint('[VerysenseService] Verify video file error: $e');
+      debugPrint('[VerysenseService] Verify video bytes error: $e');
       rethrow;
     }
   }

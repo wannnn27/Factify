@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:factify/models/user_category.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -11,13 +12,14 @@ class AuthService {
   // Get current user
   User? get currentUser => _auth.currentUser;
 
-  // Sign up with email, password, display name, and phone
+  // Sign up with email, password, display name, phone, and user category
   Future<UserCredential?> signUpWithEmailAndPassword(
     String email,
     String password,
     String displayName,
-    String phone,
-  ) async {
+    String phone, {
+    UserCategory? userCategory,
+  }) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -36,6 +38,7 @@ class AuthService {
           'email': email,
           'phone': phone,
           'photoUrl': '',
+          'userCategory': userCategory?.toFirestoreValue() ?? UserCategory.pelajar.toFirestoreValue(),
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),
         });
@@ -50,6 +53,7 @@ class AuthService {
       rethrow;
     }
   }
+
 
   // Sign in with email and password
   Future<UserCredential?> signInWithEmailAndPassword(String email, String password) async {
@@ -155,6 +159,7 @@ class AuthService {
     String? username,
     String? phone,
     String? photoUrl,
+    UserCategory? userCategory,
   }) async {
     try {
       Map<String, dynamic> updates = {
@@ -164,6 +169,7 @@ class AuthService {
       if (username != null) updates['username'] = username;
       if (phone != null) updates['phone'] = phone;
       if (photoUrl != null) updates['photoUrl'] = photoUrl;
+      if (userCategory != null) updates['userCategory'] = userCategory.toFirestoreValue();
 
       await _firestore.collection('users').doc(uid).update(updates);
 
