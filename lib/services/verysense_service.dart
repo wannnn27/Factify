@@ -289,12 +289,24 @@ class VerysenseService {
     
     if (response.statusCode == 200) {
       try {
-        final data = json.decode(utf8.decode(response.bodyBytes));
-        debugPrint('[VerysenseService] Response data: $data');
+        final body = utf8.decode(response.bodyBytes);
+        if (body.trim().isEmpty) {
+          throw VerysenseException(
+            'Empty response from server',
+            details: 'Response body is empty. Video verification may have timed out or failed on server.',
+          );
+        }
+        final data = json.decode(body) as Map<String, dynamic>?;
+        if (data == null) {
+          throw VerysenseException('Invalid response format', details: 'Expected JSON object');
+        }
+        debugPrint('[VerysenseService] Response keys: ${data.keys.join(', ')}');
         return VerificationResult.fromJson(data);
-      } catch (e) {
+      } catch (e, stack) {
         debugPrint('[VerysenseService] Parse error: $e');
-        throw VerysenseException('Failed to parse response', details: e.toString());
+        debugPrint('[VerysenseService] Stack: $stack');
+        final details = e is VerysenseException ? e.details : e.toString();
+        throw VerysenseException('Failed to parse response', details: details);
       }
     } else {
       // Try to get error message from response

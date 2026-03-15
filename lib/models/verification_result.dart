@@ -123,18 +123,41 @@ class VideoAnalysisDetail {
   });
 
   factory VideoAnalysisDetail.fromJson(Map<String, dynamic> json) {
-    final deepfakeAnalysis = json['deepfake_analysis'] as Map<String, dynamic>? ?? {};
-    
+    final deepfakeAnalysis = json['deepfake_analysis'] is Map
+        ? Map<String, dynamic>.from(json['deepfake_analysis'] as Map)
+        : <String, dynamic>{};
+    final audioAnalysis = json['audio_analysis'] is Map
+        ? json['audio_analysis'] as Map<String, dynamic>
+        : null;
+    final visualAnalysis = json['visual_analysis'] is Map
+        ? json['visual_analysis'] as Map<String, dynamic>
+        : null;
+
     return VideoAnalysisDetail(
-      deepfakeScore: (json['deepfake_score'] ?? deepfakeAnalysis['confidence'] ?? 0.0).toDouble() * 100,
-      audioAuthenticity: (json['audio_authenticity'] ?? json['audio_analysis']?['score'] ?? 0.6).toDouble() * 100,
-      metadataIntegrity: (json['metadata_integrity'] ?? 0.75).toDouble() * 100,
-      visualConsistency: (json['visual_consistency'] ?? json['visual_analysis']?['consistency_score'] ?? 0.7).toDouble() * 100,
-      temporalConsistency: (json['temporal_consistency'] ?? 0.8).toDouble() * 100,
-      isDeepfake: deepfakeAnalysis['is_deepfake'] ?? false,
-      deepfakeConfidence: (deepfakeAnalysis['confidence'] ?? 0.0).toDouble(),
+      deepfakeScore: _safeDouble(json['deepfake_score'], deepfakeAnalysis['confidence'], 0.0) * 100,
+      audioAuthenticity: _safeDouble(json['audio_authenticity'], audioAnalysis?['score'], 0.6) * 100,
+      metadataIntegrity: _safeDouble(json['metadata_integrity'], null, 0.75) * 100,
+      visualConsistency: _safeDouble(json['visual_consistency'], visualAnalysis?['consistency_score'], 0.7) * 100,
+      temporalConsistency: _safeDouble(json['temporal_consistency'], null, 0.8) * 100,
+      isDeepfake: _safeBool(deepfakeAnalysis['is_deepfake'], false),
+      deepfakeConfidence: _safeDouble(deepfakeAnalysis['confidence'], null, 0.0),
       additionalData: json,
     );
+  }
+
+  static double _safeDouble(dynamic primary, dynamic secondary, double fallback) {
+    final v = primary ?? secondary;
+    if (v == null) return fallback;
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v) ?? fallback;
+    return fallback;
+  }
+
+  static bool _safeBool(dynamic value, bool fallback) {
+    if (value == null) return fallback;
+    if (value is bool) return value;
+    if (value is String) return value.toLowerCase() == 'true';
+    return fallback;
   }
 }
 
@@ -338,12 +361,23 @@ class VerificationResult {
     }
   }
 
+  /// Safe parse double from JSON (int, double, or string).
+  static double _safeDoubleFromJson(dynamic value, double fallback) {
+    if (value == null) return fallback;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? fallback;
+    return fallback;
+  }
+
   /// Factory constructor untuk membuat dari JSON response
   factory VerificationResult.fromJson(Map<String, dynamic> json) {
-    final contentTypeStr = json['content_type'] as String? ?? 'text';
+    final contentTypeStr = json['content_type'] is String ? json['content_type'] as String : 'text';
     final contentType = _parseContentType(contentTypeStr);
-    final detailedAnalysis = json['detailed_analysis'] as Map<String, dynamic>? ?? {};
-    final score = (json['score'] ?? 50.0).toDouble();
+    final rawDetailed = json['detailed_analysis'];
+    final detailedAnalysis = rawDetailed is Map
+        ? Map<String, dynamic>.from(rawDetailed as Map)
+        : <String, dynamic>{};
+    final score = _safeDoubleFromJson(json['score'], 50.0);
     
     // Parse type-specific details
     TextAnalysisDetail? textDetail;
@@ -388,19 +422,19 @@ class VerificationResult {
     );
     
     return VerificationResult(
-      requestId: json['request_id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      requestId: json['request_id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
       contentType: contentType,
       score: score,
-      confidence: (json['confidence'] ?? 0.7).toDouble(),
-      status: _parseStatus(json['status'] ?? ''),
-      statusColor: _parseColor(json['status_color']),
-      source: json['source'] ?? 'Sumber tidak diketahui',
+      confidence: _safeDoubleFromJson(json['confidence'], 0.7),
+      status: _parseStatus(json['status']?.toString() ?? ''),
+      statusColor: _parseColor(json['status_color']?.toString()),
+      source: json['source']?.toString() ?? 'Sumber tidak diketahui',
       aiSummary: aiSummary,
       mainFindings: mainFindings,
       needAttention: needAttention,
       aboutSource: aboutSource,
       detailedAnalysis: detailedAnalysis,
-      analysisTime: (json['analysis_time'] ?? 0.0).toDouble(),
+      analysisTime: _safeDoubleFromJson(json['analysis_time'], 0.0),
       timestamp: json['timestamp'] != null 
           ? DateTime.tryParse(json['timestamp']) ?? DateTime.now()
           : DateTime.now(),
