@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/comment_model.dart';
 import '../../services/comment_service.dart';
 import 'comment_widget.dart';
@@ -24,11 +25,27 @@ class _DiscussionSectionState extends State<DiscussionSection> {
   bool _isLoading = true;
   String? _replyingToId;
   String _replyingToName = '';
+  String _currentUserName = 'Pengguna';
+  String _currentUserAvatar = '';
 
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
     _loadComments();
+  }
+
+  void _loadCurrentUser() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      _currentUserName = 'Tamu';
+      _currentUserAvatar = '';
+      return;
+    }
+
+    _currentUserName =
+        user.displayName?.trim().isNotEmpty == true ? user.displayName!.trim() : (user.email?.split('@').first ?? 'Pengguna');
+    _currentUserAvatar = user.photoURL ?? '';
   }
 
   Future<void> _loadComments() async {
@@ -45,8 +62,8 @@ class _DiscussionSectionState extends State<DiscussionSection> {
 
     final newComment = Comment(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userName: 'Pengguna', // TODO: Replace with actual user name
-      userAvatar: '',
+      userName: _currentUserName,
+      userAvatar: _currentUserAvatar,
       content: _commentController.text.trim(),
       timestamp: DateTime.now(),
     );
