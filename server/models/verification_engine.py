@@ -178,42 +178,8 @@ class VerificationEngine:
                     api_key = os.getenv('GEMINI_API_KEY')
                     if api_key:
                         genai.configure(api_key=api_key)
-                        # Use a model with good reasoning for chat
-                        self.chat_model = genai.GenerativeModel('gemini-1.5-pro')
-                        self.initialized_analyzers.add("chat")
-                        print("[Engine] Chat model initialized")
-                except Exception as e:
-                    print(f"[Engine] Failed to init chat model: {e}")
-        
-        self.initialized_analyzers.add(type_str)
-
-    def evaluate_challenge(self, case_context: Dict[str, str], user_answer: str, user_sources: str) -> Dict[str, Any]:
-        """Evaluate challenge answer"""
-        self._ensure_analyzer("challenge")
-        self._ensure_analyzer("challenge")
-        return self.challenge_analyzer.evaluate(case_context, user_answer, user_sources)
-
-    def chat(self, message: str, history: List[Dict[str, str]] = []) -> str:
-        """
-        Chat functionality using Gemini
-        """
-        self._ensure_analyzer("chat")
-        
-        if not self.chat_model:
-            return "Maaf, fitur chat sedang tidak tersedia karena konfigurasi AI (Chat Model) belum siap."
-
-        try:
-            # Convert simple history to Gemini format if needed
-            # Valid roles: 'user', 'model'
-            gemini_history = []
-            for msg in history:
-                role = "user" if msg.get("role") == "user" else "model"
-                gemini_history.append({"role": role, "parts": [msg.get("text", "")]})
-
-            # System instruction is implicit via initial context or system prompt feature 
-            # (Gemini API system_instruction is supported in newer SDKs, but let's use context injection for safety)
-            
-            system_prompt = """
+                        # System prompt persists via system_instruction
+                        system_prompt = """
             Kamu adalah "Facti Assistant", asisten virtual cerdas untuk aplikasi Factify.
             
             KARAKTER:
@@ -239,17 +205,43 @@ class VerificationEngine:
             - Membuat hoax.
             - Menjawab kasar.
             """
+                        self.chat_model = genai.GenerativeModel(
+                            'gemini-1.5-pro',
+                            system_instruction=system_prompt
+                        )
+                        self.initialized_analyzers.add("chat")
+                        print("[Engine] Chat model initialized with system instruction")
+                except Exception as e:
+                    print(f"[Engine] Failed to init chat model: {e}")
+        
+        self.initialized_analyzers.add(type_str)
+
+    def evaluate_challenge(self, case_context: Dict[str, str], user_answer: str, user_sources: str) -> Dict[str, Any]:
+        """Evaluate challenge answer"""
+        self._ensure_analyzer("challenge")
+        return self.challenge_analyzer.evaluate(case_context, user_answer, user_sources)
+
+    def chat(self, message: str, history: Optional[List[Dict[str, str]]] = None) -> str:
+        """
+        Chat functionality using Gemini
+        """
+        history = history or []
+        self._ensure_analyzer("chat")
+        
+        if not self.chat_model:
+            return "Maaf, fitur chat sedang tidak tersedia karena konfigurasi AI (Chat Model) belum siap."
+
+        try:
+            # Convert simple history to Gemini format if needed
+            # Valid roles: 'user', 'model'
+            gemini_history = []
+            for msg in history:
+                role = "user" if msg.get("role") == "user" else "model"
+                gemini_history.append({"role": role, "parts": [msg.get("text", "")]})
             
-            # Start chat session or send message with history
+            # Start chat session and send message
             chat = self.chat_model.start_chat(history=gemini_history)
-            
-            # Send message with system prompt prepended if it's a fresh session effectively (or treat as context)
-            # A simple trick is to add context to the user message if history is empty
-            final_message = message
-            if not history:
-                 final_message = f"{system_prompt}\n\nUser: {message}"
-            
-            response = chat.send_message(final_message)
+            response = chat.send_message(message)
             return response.text.strip()
             
         except Exception as e:

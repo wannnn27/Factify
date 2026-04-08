@@ -43,7 +43,7 @@ class AnalysisResult:
         if score >= 80:
             return ('kredibel', '#4ECDC4')  
         elif score >= 60:
-            return ('cukup_kredibel', '#4ECDC4')  
+            return ('cukup_kredibel', '#7EDDB5')  
         elif score >= 40:
             return ('perlu_perhatian', '#FFD93D')  
         else:

@@ -7,18 +7,30 @@ class UserStatsService {
   factory UserStatsService() => _instance;
   UserStatsService._internal();
 
-  // Keys for SharedPreferences
-  static const String _keyArticlesRead = 'user_articles_read';
-  static const String _keyChallengesCompleted = 'user_challenges_completed';
-  static const String _keyQuizAnswered = 'user_quiz_answered';
-  static const String _keyVerificationsCount = 'user_verifications_count';
-  static const String _keyHighestChallengeScore = 'user_highest_challenge_score';
-  static const String _keyTotalXP = 'user_total_xp';
-  static const String _keyStreak = 'user_streak';
-  static const String _keyLastActiveDate = 'user_last_active_date';
-  static const String _keyReadArticleIds = 'user_read_article_ids';
+  // Base key names (will be prefixed with user UID)
+  static const String _baseKeyArticlesRead = 'articles_read';
+  static const String _baseKeyChallengesCompleted = 'challenges_completed';
+  static const String _baseKeyQuizAnswered = 'quiz_answered';
+  static const String _baseKeyVerificationsCount = 'verifications_count';
+  static const String _baseKeyHighestChallengeScore = 'highest_challenge_score';
+  static const String _baseKeyTotalXP = 'total_xp';
+  static const String _baseKeyStreak = 'streak';
+  static const String _baseKeyLastActiveDate = 'last_active_date';
+  static const String _baseKeyReadArticleIds = 'read_article_ids';
   
   SharedPreferences? _prefs;
+  String? _currentUid;
+  
+  // ============ USER-SCOPED KEY GENERATION ============
+  
+  /// Get current user UID, or 'guest' for unauthenticated users
+  String get _uid {
+    _currentUid = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
+    return _currentUid!;
+  }
+  
+  /// Generate user-scoped key to isolate data per user
+  String _key(String baseKey) => '${_uid}_$baseKey';
   
   // Initialize preferences
   Future<void> init() async {
@@ -32,46 +44,52 @@ class UserStatsService {
     return _prefs!;
   }
   
+  /// Call this when user signs out to clear the cached UID
+  /// so next user doesn't see stale data
+  void onUserChanged() {
+    _currentUid = null;
+  }
+  
   // ============ GETTERS ============
   
   Future<int> get articlesRead async {
     final p = await prefs;
-    return p.getInt(_keyArticlesRead) ?? 0;
+    return p.getInt(_key(_baseKeyArticlesRead)) ?? 0;
   }
   
   Future<int> get challengesCompleted async {
     final p = await prefs;
-    return p.getInt(_keyChallengesCompleted) ?? 0;
+    return p.getInt(_key(_baseKeyChallengesCompleted)) ?? 0;
   }
   
   Future<int> get quizAnswered async {
     final p = await prefs;
-    return p.getInt(_keyQuizAnswered) ?? 0;
+    return p.getInt(_key(_baseKeyQuizAnswered)) ?? 0;
   }
   
   Future<int> get verificationsCount async {
     final p = await prefs;
-    return p.getInt(_keyVerificationsCount) ?? 0;
+    return p.getInt(_key(_baseKeyVerificationsCount)) ?? 0;
   }
   
   Future<int> get highestChallengeScore async {
     final p = await prefs;
-    return p.getInt(_keyHighestChallengeScore) ?? 0;
+    return p.getInt(_key(_baseKeyHighestChallengeScore)) ?? 0;
   }
   
   Future<int> get totalXP async {
     final p = await prefs;
-    return p.getInt(_keyTotalXP) ?? 0;
+    return p.getInt(_key(_baseKeyTotalXP)) ?? 0;
   }
   
   Future<int> get streak async {
     final p = await prefs;
-    return p.getInt(_keyStreak) ?? 0;
+    return p.getInt(_key(_baseKeyStreak)) ?? 0;
   }
   
   Future<List<String>> get readArticleIds async {
     final p = await prefs;
-    return p.getStringList(_keyReadArticleIds) ?? [];
+    return p.getStringList(_key(_baseKeyReadArticleIds)) ?? [];
   }
   
   // Get all stats at once
@@ -92,7 +110,8 @@ class UserStatsService {
   // Mark article as read and increment counter
   Future<bool> markArticleAsRead(String articleId) async {
     final p = await prefs;
-    final readIds = p.getStringList(_keyReadArticleIds) ?? [];
+    final key = _key(_baseKeyReadArticleIds);
+    final readIds = p.getStringList(key) ?? [];
     
     // Check if already read
     if (readIds.contains(articleId)) {
@@ -101,11 +120,12 @@ class UserStatsService {
     
     // Add to read list
     readIds.add(articleId);
-    await p.setStringList(_keyReadArticleIds, readIds);
+    await p.setStringList(key, readIds);
     
     // Increment articles read count
-    final current = p.getInt(_keyArticlesRead) ?? 0;
-    await p.setInt(_keyArticlesRead, current + 1);
+    final countKey = _key(_baseKeyArticlesRead);
+    final current = p.getInt(countKey) ?? 0;
+    await p.setInt(countKey, current + 1);
     
     // Add XP for reading
     await addXP(5);
@@ -127,13 +147,15 @@ class UserStatsService {
     final p = await prefs;
     
     // Increment challenges completed
-    final current = p.getInt(_keyChallengesCompleted) ?? 0;
-    await p.setInt(_keyChallengesCompleted, current + 1);
+    final countKey = _key(_baseKeyChallengesCompleted);
+    final current = p.getInt(countKey) ?? 0;
+    await p.setInt(countKey, current + 1);
     
     // Update highest score if applicable
-    final highScore = p.getInt(_keyHighestChallengeScore) ?? 0;
+    final highKey = _key(_baseKeyHighestChallengeScore);
+    final highScore = p.getInt(highKey) ?? 0;
     if (score > highScore) {
-      await p.setInt(_keyHighestChallengeScore, score);
+      await p.setInt(highKey, score);
     }
     
     // Add XP based on score
@@ -148,8 +170,9 @@ class UserStatsService {
     final p = await prefs;
     
     // Increment quiz count
-    final current = p.getInt(_keyQuizAnswered) ?? 0;
-    await p.setInt(_keyQuizAnswered, current + 1);
+    final countKey = _key(_baseKeyQuizAnswered);
+    final current = p.getInt(countKey) ?? 0;
+    await p.setInt(countKey, current + 1);
     
     // Add XP if correct
     if (isCorrect) {
@@ -164,8 +187,9 @@ class UserStatsService {
   Future<void> completedVerification() async {
     final p = await prefs;
     
-    final current = p.getInt(_keyVerificationsCount) ?? 0;
-    await p.setInt(_keyVerificationsCount, current + 1);
+    final countKey = _key(_baseKeyVerificationsCount);
+    final current = p.getInt(countKey) ?? 0;
+    await p.setInt(countKey, current + 1);
     
     // Add XP for verification
     await addXP(15);
@@ -177,21 +201,24 @@ class UserStatsService {
   // Add XP
   Future<void> addXP(int amount) async {
     final p = await prefs;
-    final current = p.getInt(_keyTotalXP) ?? 0;
-    await p.setInt(_keyTotalXP, current + amount);
+    final xpKey = _key(_baseKeyTotalXP);
+    final current = p.getInt(xpKey) ?? 0;
+    await p.setInt(xpKey, current + amount);
   }
   
   // Check and update streak
   Future<void> _checkAndUpdateStreak() async {
     final p = await prefs;
-    final lastActiveStr = p.getString(_keyLastActiveDate);
+    final streakKey = _key(_baseKeyStreak);
+    final dateKey = _key(_baseKeyLastActiveDate);
+    final lastActiveStr = p.getString(dateKey);
     final today = DateTime.now();
-    final todayStr = '${today.year}-${today.month}-${today.day}';
+    final todayStr = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
     
     if (lastActiveStr == null) {
       // First time user
-      await p.setInt(_keyStreak, 1);
-      await p.setString(_keyLastActiveDate, todayStr);
+      await p.setInt(streakKey, 1);
+      await p.setString(dateKey, todayStr);
       return;
     }
     
@@ -202,6 +229,13 @@ class UserStatsService {
     
     // Parse last active date
     final parts = lastActiveStr.split('-');
+    if (parts.length != 3) {
+      // Invalid date format, reset
+      await p.setInt(streakKey, 1);
+      await p.setString(dateKey, todayStr);
+      return;
+    }
+    
     final lastActive = DateTime(
       int.parse(parts[0]),
       int.parse(parts[1]),
@@ -212,14 +246,14 @@ class UserStatsService {
     
     if (difference == 1) {
       // Consecutive day, increment streak
-      final currentStreak = p.getInt(_keyStreak) ?? 0;
-      await p.setInt(_keyStreak, currentStreak + 1);
+      final currentStreak = p.getInt(streakKey) ?? 0;
+      await p.setInt(streakKey, currentStreak + 1);
     } else if (difference > 1) {
       // Streak broken, reset to 1
-      await p.setInt(_keyStreak, 1);
+      await p.setInt(streakKey, 1);
     }
     
-    await p.setString(_keyLastActiveDate, todayStr);
+    await p.setString(dateKey, todayStr);
   }
   
   // ============ FIREBASE SYNC ============
@@ -263,48 +297,39 @@ class UserStatsService {
       final cloudStats = data['stats'] as Map<String, dynamic>;
       final p = await prefs;
       
-      // Merge: take the higher value
-      final localArticles = p.getInt(_keyArticlesRead) ?? 0;
-      final cloudArticles = cloudStats['articlesRead'] ?? 0;
-      if (cloudArticles > localArticles) {
-        await p.setInt(_keyArticlesRead, cloudArticles);
+      // Merge: take the higher value (user-scoped keys)
+      void mergeInt(String baseKey, String cloudKey) {
+        final localVal = p.getInt(_key(baseKey)) ?? 0;
+        final cloudVal = cloudStats[cloudKey] ?? 0;
+        if (cloudVal > localVal) {
+          p.setInt(_key(baseKey), cloudVal);
+        }
       }
       
-      final localChallenges = p.getInt(_keyChallengesCompleted) ?? 0;
-      final cloudChallenges = cloudStats['challengesCompleted'] ?? 0;
-      if (cloudChallenges > localChallenges) {
-        await p.setInt(_keyChallengesCompleted, cloudChallenges);
-      }
-      
-      final localXP = p.getInt(_keyTotalXP) ?? 0;
-      final cloudXP = cloudStats['totalXP'] ?? 0;
-      if (cloudXP > localXP) {
-        await p.setInt(_keyTotalXP, cloudXP);
-      }
-      
-      final localHighScore = p.getInt(_keyHighestChallengeScore) ?? 0;
-      final cloudHighScore = cloudStats['highestChallengeScore'] ?? 0;
-      if (cloudHighScore > localHighScore) {
-        await p.setInt(_keyHighestChallengeScore, cloudHighScore);
-      }
+      mergeInt(_baseKeyArticlesRead, 'articlesRead');
+      mergeInt(_baseKeyChallengesCompleted, 'challengesCompleted');
+      mergeInt(_baseKeyTotalXP, 'totalXP');
+      mergeInt(_baseKeyHighestChallengeScore, 'highestChallengeScore');
+      mergeInt(_baseKeyQuizAnswered, 'quizAnswered');
+      mergeInt(_baseKeyVerificationsCount, 'verificationsCount');
       
     } catch (e) {
       print('Failed to sync stats from Firebase: $e');
     }
   }
   
-  // Reset all stats (for testing or account reset)
+  // Reset all stats for current user
   Future<void> resetAllStats() async {
     final p = await prefs;
-    await p.remove(_keyArticlesRead);
-    await p.remove(_keyChallengesCompleted);
-    await p.remove(_keyQuizAnswered);
-    await p.remove(_keyVerificationsCount);
-    await p.remove(_keyHighestChallengeScore);
-    await p.remove(_keyTotalXP);
-    await p.remove(_keyStreak);
-    await p.remove(_keyLastActiveDate);
-    await p.remove(_keyReadArticleIds);
+    await p.remove(_key(_baseKeyArticlesRead));
+    await p.remove(_key(_baseKeyChallengesCompleted));
+    await p.remove(_key(_baseKeyQuizAnswered));
+    await p.remove(_key(_baseKeyVerificationsCount));
+    await p.remove(_key(_baseKeyHighestChallengeScore));
+    await p.remove(_key(_baseKeyTotalXP));
+    await p.remove(_key(_baseKeyStreak));
+    await p.remove(_key(_baseKeyLastActiveDate));
+    await p.remove(_key(_baseKeyReadArticleIds));
   }
 }
 

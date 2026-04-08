@@ -77,7 +77,7 @@ class URLAnalyzer(BaseAnalyzer):
                 try:
                     import google.generativeai as genai
                     genai.configure(api_key=api_key)
-                    self.genai_model = genai.GenerativeModel('gemini-flash-latest')
+                    self.genai_model = genai.GenerativeModel('gemini-1.5-flash')
                     print("[URLAnalyzer] Gemini AI initialized for content analysis")
                 except Exception as e:
                     print(f"[URLAnalyzer] Failed to initialize Gemini: {e}")
@@ -342,15 +342,41 @@ class URLAnalyzer(BaseAnalyzer):
         return {'has_ssl': url.startswith('https://')}
         
     def _check_domain_age(self, domain: str) -> Dict[str, Any]:
-        # Minimalist reliable check, since whois fails often on weird TLDs
-        return {'score': 0.5} 
+        """Check domain age via WHOIS — older domains are generally more trustworthy"""
+        if whois is None:
+            return {'score': 0.5}
+        try:
+            w = whois.whois(domain)
+            creation = w.creation_date
+            if isinstance(creation, list):
+                creation = creation[0]
+            if creation is None:
+                return {'score': 0.5}
+            from datetime import datetime
+            age_days = (datetime.now() - creation).days
+            age_years = age_days / 365.25
+            # Score: <1 year = 0.2, 1-3 years = 0.5, 3-5 years = 0.7, >5 years = 0.9
+            if age_years >= 5:
+                score = 0.9
+            elif age_years >= 3:
+                score = 0.7
+            elif age_years >= 1:
+                score = 0.5
+            else:
+                score = 0.2
+            return {'score': score, 'age_years': round(age_years, 1), 'creation_date': str(creation)}
+        except Exception as e:
+            print(f"[URLAnalyzer] WHOIS lookup failed for {domain}: {e}")
+            return {'score': 0.5}
 
     def _check_phishing_patterns(self, url: str) -> float:
         count = 0
-        if any(p in url.lower() for p in self.PHISHING_PATTERNS): count += 1
+        if any(re.search(p, url.lower()) for p in self.PHISHING_PATTERNS): count += 1
         if url.count('.') > 3: count += 1
         return min(1.0, count * 0.3)
 
     def _calculate_final_score(self, domain_score, blacklist_penalty, tld_score, ssl_score, age_score, phishing_penalty, content_score):
-        # Weighted simple formula
-        return round((domain_score * 0.3 + blacklist_penalty * 0.1 + content_score * 0.4 + ssl_score * 0.1 + phishing_penalty * 0.1) * 100, 1)
+        # Weighted formula including tld_score and age_score
+        return round((domain_score * 0.25 + blacklist_penalty * 0.1 + tld_score * 0.05 + 
+                      content_score * 0.35 + ssl_score * 0.1 + age_score * 0.05 + 
+                      phishing_penalty * 0.1) * 100, 1)

@@ -153,7 +153,7 @@ class TextAnalyzer(BaseAnalyzer):
         start_time = time.time()
         
         if not text or not text.strip():
-            return self._create_result(0, 0, ["Teks kosong"], ["Tidak ada teks"], 0)
+            return self._create_result(score=0, confidence=0, findings=["Teks kosong"], warnings=["Tidak ada teks"], analysis_time=0)
         
         # 1. Rule-based Analysis (Cepat & Murah)
         cleaned_text = self._preprocess_text(text)
@@ -370,8 +370,7 @@ class TextAnalyzer(BaseAnalyzer):
         except Exception as e:
             msg = f"Error: {e}\nRaw Content: {content}"
             print(f"[TextAnalyzer] Error parsing LLM response: {e}")
-            with open("error_llm.txt", "w", encoding='utf-8') as f:
-                f.write(msg)
+            print(f"[TextAnalyzer] Raw LLM response for debugging: {content[:500]}")
             return None
 
     def _preprocess_text(self, text: str) -> str:

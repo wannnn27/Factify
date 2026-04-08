@@ -19,7 +19,7 @@ class ChatbotService {
       // Build history from context
       final history = context
           .where((msg) => !msg.isTyping)
-          .map((msg) => {
+          .map((msg) => <String, String>{
                 'role': msg.isUser ? 'user' : 'model',
                 'text': msg.text,
               })

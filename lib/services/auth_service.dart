@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:factify/models/user_category.dart';
+import 'package:factify/services/user_stats_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -195,6 +196,9 @@ class AuthService {
         // Abaikan error Google Sign In - mungkin user tidak login via Google
         print('Google sign out skipped: $googleError');
       }
+      
+      // Clear user-scoped stats cache before sign out
+      userStats.onUserChanged();
       
       // Kemudian sign out dari Firebase
       await _auth.signOut();

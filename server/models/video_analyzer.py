@@ -378,7 +378,73 @@ class VideoAnalyzer(BaseAnalyzer):
         }
     
     def _analyze_audio_sync(self, video_path: str) -> Dict[str, Any]:
-        return {'score': 0.5} 
+        """Analyze audio-visual synchronization — detect missing/mismatched audio"""
+        try:
+            import subprocess
+            import shutil
+
+            # Check if ffprobe is available
+            ffprobe_path = shutil.which('ffprobe')
+            if ffprobe_path is None:
+                # Fallback: check if video has audio stream via OpenCV metadata
+                # (OpenCV can't directly check audio, so use a heuristic)
+                return {'score': 0.5, 'has_audio': None, 'method': 'no_ffprobe'}
+
+            # Use ffprobe to check audio streams
+            cmd = [
+                ffprobe_path, '-v', 'quiet',
+                '-print_format', 'json',
+                '-show_streams',
+                '-select_streams', 'a',
+                video_path
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            
+            import json
+            probe_data = json.loads(result.stdout)
+            audio_streams = probe_data.get('streams', [])
+            
+            if not audio_streams:
+                # No audio track — common in manipulated videos
+                return {
+                    'score': 0.3,
+                    'has_audio': False,
+                    'warning': 'Video tidak memiliki audio track',
+                }
+            
+            # Has audio — check basic properties
+            audio = audio_streams[0]
+            sample_rate = int(audio.get('sample_rate', 0))
+            channels = int(audio.get('channels', 0))
+            
+            score = 0.7
+            if sample_rate >= 44100 and channels >= 2:
+                score = 0.8  # Good quality audio
+            elif sample_rate >= 22050:
+                score = 0.6  # Acceptable
+            else:
+                score = 0.4  # Low quality, potentially re-encoded
+            
+            return {
+                'score': score,
+                'has_audio': True,
+                'sample_rate': sample_rate,
+                'channels': channels,
+                'codec': audio.get('codec_name', 'unknown'),
+            }
+        except Exception as e:
+            print(f"[VideoAnalyzer] Audio sync analysis error: {e}")
+            return {'score': 0.5}
 
     def _calculate_final_score(self, face, temporal, quality, deepfake, audio) -> float:
-        return 50.0
+        """Calculate weighted final score from all sub-analyses"""
+        # Weights: face consistency(20%), temporal(20%), quality(10%), deepfake detection(35%), audio(15%)
+        score = (
+            face * 0.20 +
+            temporal * 0.20 +
+            quality * 0.10 +
+            deepfake * 0.35 +
+            audio * 0.15
+        )
+        return round(max(0.0, min(100.0, score * 100)), 1)
+

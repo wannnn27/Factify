@@ -29,7 +29,28 @@ from models.verification_engine import VerificationEngine, ContentType, Verifica
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # Enable CORS for Flutter app
+
+# CORS - restrict to known origins
+CORS(app, origins=[
+    "http://localhost:*",
+    "http://127.0.0.1:*",
+    "https://arwnsyh-factify-models.hf.space",
+])
+
+# Rate Limiting (graceful fallback if flask-limiter not installed)
+try:
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
+    limiter = Limiter(
+        get_remote_address,
+        app=app,
+        default_limits=["60 per minute"],
+        storage_uri="memory://",
+    )
+    print("[App] Rate limiting enabled: 60 req/min")
+except ImportError:
+    limiter = None
+    print("[App] flask-limiter not installed, rate limiting disabled")
 
 # Configuration
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max

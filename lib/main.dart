@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
 import 'screens/intro/splash_screen.dart';
 
@@ -20,6 +21,14 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
+  // Initialize Google Sign-In (MANDATORY for google_sign_in v7.x)
+  // Must be called once before using authenticate()
+  try {
+    await GoogleSignIn.instance.initialize();
+  } catch (e) {
+    debugPrint('Google Sign-In initialization skipped: $e');
+  }
   
   // Initialize guest service
   await guestService.init();

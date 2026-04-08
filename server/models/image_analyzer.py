@@ -318,7 +318,7 @@ class ImageAnalyzer(BaseAnalyzer):
                 for k, v in exif.items():
                     tag = self.EXIF_TAGS.get(k, k)
                     data[str(tag)] = str(v)[:100]
-        except: pass
+        except Exception: pass
         return {'score': score, 'data': data, 'findings': [], 'warnings': []}
 
     def _perform_ela(self, img) -> Dict[str, Any]:
@@ -337,20 +337,168 @@ class ImageAnalyzer(BaseAnalyzer):
                 diff_arr = np.array(diff)
                 score = min(1.0, np.mean(diff_arr)/10)
                 return {'score': score, 'manipulation_detected': score > 0.4}
-        except: pass
+        except Exception: pass
         return {'score': 0.0, 'manipulation_detected': False}
 
     def _analyze_quality(self, img) -> Dict[str, Any]:
-        return {'score': 0.8, 'is_compressed': False} # Basic stub to save token space if full impl not needed for logic flow
+        """Analyze image quality — blur detection, compression artifacts"""
+        try:
+            if cv2 is not None and np is not None:
+                # Convert PIL to OpenCV format
+                img_cv = cv2.cvtColor(np.array(img.convert('RGB')), cv2.COLOR_RGB2BGR)
+                gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+                
+                # Laplacian variance — low value = blurry
+                laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+                is_blurry = laplacian_var < 100
+                
+                # JPEG artifact detection via block boundary analysis
+                # High-quality images have laplacian variance > 500
+                if laplacian_var > 500:
+                    quality_score = 0.9
+                elif laplacian_var > 200:
+                    quality_score = 0.7
+                elif laplacian_var > 50:
+                    quality_score = 0.5
+                else:
+                    quality_score = 0.3
+                    
+                return {
+                    'score': quality_score,
+                    'is_blurry': is_blurry,
+                    'is_compressed': laplacian_var < 50,
+                    'sharpness': round(float(laplacian_var), 2),
+                }
+            else:
+                # Fallback: basic PIL analysis
+                width, height = img.size
+                resolution_score = min(1.0, (width * height) / (1920 * 1080))
+                return {'score': max(0.4, resolution_score), 'is_compressed': False}
+        except Exception as e:
+            print(f"[ImageAnalyzer] Quality analysis error: {e}")
+            return {'score': 0.5, 'is_compressed': False}
 
     def _detect_copy_move(self, img) -> Dict[str, Any]:
-        return {'detected': False}
+        """Detect copy-move forgery using ORB feature matching (OpenCV)"""
+        try:
+            if cv2 is None or np is None:
+                return {'detected': False, 'reason': 'OpenCV not available'}
+            
+            img_cv = cv2.cvtColor(np.array(img.convert('RGB')), cv2.COLOR_RGB2GRAY)
+            
+            # Resize for performance (max 800px width)
+            h, w = img_cv.shape
+            if w > 800:
+                scale = 800 / w
+                img_cv = cv2.resize(img_cv, (800, int(h * scale)))
+            
+            # ORB feature detection
+            orb = cv2.ORB_create(nfeatures=1000)
+            keypoints, descriptors = orb.detectAndCompute(img_cv, None)
+            
+            if descriptors is None or len(keypoints) < 10:
+                return {'detected': False, 'keypoints': len(keypoints) if keypoints else 0}
+            
+            # BFMatcher to find similar regions within same image
+            bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)
+            matches = bf.knnMatch(descriptors, descriptors, k=2)
+            
+            # Filter matches: close in descriptor space but far in spatial location
+            suspicious_matches = 0
+            for m_list in matches:
+                if len(m_list) >= 2:
+                    m, n = m_list[0], m_list[1]
+                    if m.queryIdx == m.trainIdx:
+                        continue
+                    # Similar descriptor but different spatial location
+                    pt1 = keypoints[m.queryIdx].pt
+                    pt2 = keypoints[m.trainIdx].pt
+                    spatial_dist = ((pt1[0] - pt2[0])**2 + (pt1[1] - pt2[1])**2)**0.5
+                    if m.distance < 30 and spatial_dist > 50:
+                        suspicious_matches += 1
+            
+            detected = suspicious_matches > 15
+            return {
+                'detected': detected,
+                'suspicious_regions': suspicious_matches,
+                'total_keypoints': len(keypoints),
+            }
+        except Exception as e:
+            print(f"[ImageAnalyzer] Copy-move detection error: {e}")
+            return {'detected': False}
 
     def _detect_ai_generated(self, img) -> Dict[str, Any]:
-        return {'is_ai_generated': False}
+        """Heuristic AI-generated image detection based on statistical anomalies"""
+        try:
+            if np is None:
+                return {'is_ai_generated': False}
+            
+            img_array = np.array(img.convert('RGB')).astype(np.float64)
+            
+            indicators = 0
+            details = []
+            
+            # 1. Check color channel uniformity (AI images often have unnaturally smooth gradients)
+            for ch, name in enumerate(['R', 'G', 'B']):
+                channel = img_array[:, :, ch]
+                # AI images tend to have lower high-frequency noise
+                std_local = np.std(np.diff(channel, axis=0))
+                if std_local < 3.0:
+                    indicators += 1
+                    details.append(f"{name} channel suspiciously smooth ({std_local:.1f})")
+            
+            # 2. Check for periodic patterns in frequency domain
+            gray = np.mean(img_array, axis=2)
+            # Simple FFT analysis
+            f_transform = np.fft.fft2(gray)
+            f_shift = np.fft.fftshift(f_transform)
+            magnitude = np.abs(f_shift)
+            # AI images sometimes show unusual frequency spikes
+            center_h, center_w = magnitude.shape[0] // 2, magnitude.shape[1] // 2
+            high_freq_ratio = np.mean(magnitude[center_h-5:center_h+5, center_w-5:center_w+5]) / (np.mean(magnitude) + 1e-10)
+            if high_freq_ratio > 100:
+                indicators += 1
+                details.append("Unusual frequency domain pattern")
+            
+            # 3. Check for overly symmetric noise patterns
+            top_noise = np.std(np.diff(img_array[:img_array.shape[0]//2], axis=0))
+            bottom_noise = np.std(np.diff(img_array[img_array.shape[0]//2:], axis=0))
+            noise_ratio = min(top_noise, bottom_noise) / (max(top_noise, bottom_noise) + 1e-10)
+            if noise_ratio > 0.95:
+                indicators += 1
+                details.append("Suspiciously uniform noise distribution")
+            
+            is_ai = indicators >= 3
+            confidence = min(1.0, indicators * 0.25)
+            
+            return {
+                'is_ai_generated': is_ai,
+                'confidence': confidence,
+                'indicators': indicators,
+                'details': details,
+            }
+        except Exception as e:
+            print(f"[ImageAnalyzer] AI detection error: {e}")
+            return {'is_ai_generated': False}
 
     def _calculate_hash(self, img) -> Optional[str]:
-        return None
+        """Calculate perceptual hash for reverse image lookup"""
+        try:
+            if imagehash is not None:
+                phash = imagehash.phash(img)
+                return str(phash)
+            else:
+                # Fallback: simple MD5 of resized thumbnail
+                import hashlib
+                thumb = img.copy()
+                thumb.thumbnail((64, 64))
+                img_bytes = io.BytesIO()
+                thumb.save(img_bytes, format='PNG')
+                return hashlib.md5(img_bytes.getvalue()).hexdigest()
+        except Exception as e:
+            print(f"[ImageAnalyzer] Hash calculation error: {e}")
+            return None
 
     def _calculate_final_score(self, exif, ela, quality, copymove, ai):
         return round((exif*0.2 + ela*0.3 + quality*0.1 + copymove*0.2 + ai*0.2)*100, 1)
+

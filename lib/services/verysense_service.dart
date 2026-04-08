@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/verification_result.dart';
+import '../utils/verysense_config.dart';
 
 /// Exception khusus untuk error Verysense
 class VerysenseException implements Exception {
@@ -20,10 +20,9 @@ class VerysenseException implements Exception {
 
 /// Service untuk berkomunikasi dengan Verysense ML API
 class VerysenseService {
-  // Base URL untuk API - default ke Hugging Face Space
+  // Base URL - delegated to central config to avoid duplication
   static String get _baseUrl {
-    // Use environment variable if available, otherwise use production URL
-    final url = dotenv.env['VERYSENSE_API_URL'] ?? 'https://arwnsyh-factify-models.hf.space';
+    final url = VerysenseConfig.apiUrl;
     debugPrint('[VerysenseService] Base URL: $url');
     return url;
   }

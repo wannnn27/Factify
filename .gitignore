@@ -81,37 +81,6 @@ lib/firebase_options.dart
 server/venv/
 server/.venv/
 server/env/
-
-# Python bytecode
-server/__pycache__/
-server/**/__pycache__/
-server/*.py[cod]
-
-# Model weights (large files)
-server/models/weights/
-server/*.h5
-server/*.pkl
-
-# Uploaded files
-server/uploads/
-server/temp/
-
-# Logs
-server/*.log
-server/logs/
-
-# Cache
-server/.cache/
-server/.pytest_cache/
-
-# ===========================================
-# Python ML Server (server/)
-# ===========================================
-
-# Virtual Environment
-server/venv/
-server/.venv/
-server/env/
 server/.env/
 
 # Python bytecode

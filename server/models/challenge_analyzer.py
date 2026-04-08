@@ -4,9 +4,12 @@ Challenge Analyzer - Analisis jawaban user di fitur Challenge
 """
 import os
 import json
+import re
 from typing import Dict, Any, Optional
-import google.generativeai as genai
 from .base_model import BaseAnalyzer, AnalysisResult
+
+# Lazy import - will be imported in initialize()
+genai = None
 
 class ChallengeAnalyzer(BaseAnalyzer):
     """
@@ -19,6 +22,10 @@ class ChallengeAnalyzer(BaseAnalyzer):
         
     def initialize(self) -> bool:
         try:
+            global genai
+            import google.generativeai as _genai
+            genai = _genai
+            
             api_key = os.getenv('GEMINI_API_KEY')
             if not api_key:
                 print("[ChallengeAnalyzer] No API Key found")
@@ -27,7 +34,7 @@ class ChallengeAnalyzer(BaseAnalyzer):
             genai.configure(api_key=api_key)
             self.genai_model = genai.GenerativeModel('gemini-1.5-pro')
             self.is_initialized = True
-            print("[ChallengeAnalyzer] Gemini Flash Latest initialized")
+            print("[ChallengeAnalyzer] Gemini initialized")
             return True
         except Exception as e:
             print(f"[ChallengeAnalyzer] Init failed: {e}")
@@ -89,10 +96,6 @@ class ChallengeAnalyzer(BaseAnalyzer):
             text = response.text.strip()
             
             # Robust JSON extraction
-            import json
-            import re
-            
-            # Try finding JSON block
             match = re.search(r'\{.*\}', text, re.DOTALL)
             if match:
                 text = match.group(0)
@@ -121,4 +124,7 @@ class ChallengeAnalyzer(BaseAnalyzer):
 
     def analyze(self, content: Any) -> AnalysisResult:
         # Not used directly, but required by BaseAnalyzer
-        return AnalysisResult(0, 0, [], [])
+        return self._create_result(
+            score=0, confidence=0,
+            findings=[], warnings=["ChallengeAnalyzer.analyze() not implemented — use evaluate() instead"]
+        )
