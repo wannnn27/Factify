@@ -17,6 +17,8 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
   bool _speechEnabled = false;
   late AnimationController _animationController;
 
+  String _currentRecognizedWords = '';
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +45,10 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
       onStatus: (status) {
         debugPrint('Speech to text status: $status');
         if (status == 'done' || status == 'notListening') {
+          if (_currentRecognizedWords.isNotEmpty) {
+            widget.onResult(_currentRecognizedWords);
+            _currentRecognizedWords = '';
+          }
           if (mounted) setState(() {});
         }
       },
@@ -57,6 +63,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
       return;
     }
 
+    _currentRecognizedWords = '';
     await _speechToText.listen(
       onResult: _onSpeechResult,
       listenOptions: SpeechListenOptions(
@@ -76,9 +83,10 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
 
   /// Callback that is called whenever speech is recognized
   void _onSpeechResult(SpeechRecognitionResult result) {
-    // Only send result when it's final
+    _currentRecognizedWords = result.recognizedWords;
     if (result.finalResult) {
        widget.onResult(result.recognizedWords);
+       _currentRecognizedWords = ''; // clear so onStatus doesn't duplicate
     }
   }
 
@@ -87,27 +95,22 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
     final bool isListening = _speechToText.isListening;
 
     return GestureDetector(
-      onTapDown: (_) {
-        if (_speechEnabled) {
-           _startListening();
-        } else {
+      onTap: () {
+        if (!_speechEnabled) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Izin mikrofon diperlukan atau fitur tidak didukung.'),
               backgroundColor: Colors.orange,
             ),
           );
+          return;
         }
-      },
-      onTapUp: (_) {
-         if (isListening) {
+
+        if (isListening) {
            _stopListening();
-         }
-      },
-      onTapCancel: () {
-         if (isListening) {
-           _stopListening();
-         }
+        } else {
+           _startListening();
+        }
       },
       child: AnimatedBuilder(
         animation: _animationController,

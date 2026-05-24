@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:factify/models/challenge_models.dart';
 import 'package:factify/models/user_category.dart';
@@ -442,7 +443,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Image.network(
-                        widget.challengeCase.imageUrl,
+                        kIsWeb 
+                            ? 'https://api.allorigins.win/raw?url=${Uri.encodeComponent(widget.challengeCase.imageUrl)}'
+                            : widget.challengeCase.imageUrl,
                         height: 180,
                         width: double.infinity,
                         fit: BoxFit.cover,
