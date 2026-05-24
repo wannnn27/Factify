@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:factify/utils/speech_to_text_web_registrar_stub.dart'
+    if (dart.library.js_interop) 'package:factify/utils/speech_to_text_web_registrar_web.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+
+const bool _isWebSpeechRuntime =
+    bool.fromEnvironment('dart.library.js_interop');
 
 class VoiceInputButton extends StatefulWidget {
   final ValueChanged<String> onResult;
@@ -51,10 +57,13 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
     setState(() => _isInitializing = true);
 
     try {
+      ensureSpeechToTextWebRegistered();
+
       final available = await _speechToText.initialize(
         onError: _onSpeechError,
         onStatus: _onSpeechStatus,
         debugLogging: false,
+        options: _isWebSpeechRuntime ? [SpeechToText.webDoNotAggregate] : null,
       );
 
       if (!mounted) return false;
@@ -70,7 +79,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
     } catch (e) {
       debugPrint('Speech to text initialize failed: $e');
       if (mounted) {
-        _showSnackBar('Gagal mengaktifkan voice input: $e');
+        _showSnackBar(_buildInitializeErrorMessage(e));
       }
     } finally {
       if (mounted) {
@@ -79,6 +88,14 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
     }
 
     return _speechEnabled;
+  }
+
+  String _buildInitializeErrorMessage(Object error) {
+    if (error is MissingPluginException) {
+      return 'Voice input belum siap di browser ini. Muat ulang halaman lalu coba lagi.';
+    }
+
+    return 'Gagal mengaktifkan voice input: $error';
   }
 
   Future<String> _resolvePreferredLocale() async {
