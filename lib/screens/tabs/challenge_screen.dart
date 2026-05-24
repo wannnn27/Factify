@@ -454,6 +454,8 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
                             height: 180,
+                            width: double.infinity,
+                            alignment: Alignment.center,
                             color: const Color(0xFF2B3039),
                             child: const Icon(
                               Icons.image,
