@@ -411,6 +411,8 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   bool _latarBelakangExpanded = true;
   bool _pokoMasalahExpanded = true;
   bool _isSubmitting = false;
+  bool _isVoiceListening = false;
+  String _lastVoiceInputText = '';
 
   final TextEditingController _analysisController = TextEditingController();
   final TextEditingController _sourceController = TextEditingController();
@@ -443,7 +445,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Image.network(
-                        kIsWeb 
+                        kIsWeb
                             ? 'https://api.allorigins.win/raw?url=${Uri.encodeComponent(widget.challengeCase.imageUrl)}'
                             : widget.challengeCase.imageUrl,
                         height: 180,
@@ -554,22 +556,49 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                           right: 8,
                           bottom: 8,
                           child: VoiceInputButton(
-                            onResult: (text) {
-                              // Append voice text to existing text
-                              final currentText = _analysisController.text;
-                              final newText = currentText.isEmpty 
-                                  ? text 
-                                  : '$currentText $text';
-                              _analysisController.text = newText;
-                              
-                              // Move cursor to end
-                              _analysisController.selection = TextSelection.fromPosition(
-                                TextPosition(offset: _analysisController.text.length),
-                              );
+                            onResult: _applyVoiceResult,
+                            onListeningChanged: (isListening) {
+                              if (!mounted) return;
+                              setState(() {
+                                _isVoiceListening = isListening;
+                                if (isListening) {
+                                  _lastVoiceInputText = '';
+                                }
+                              });
                             },
                           ),
                         ),
                       ],
+                    ),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 180),
+                      child: _isVoiceListening
+                          ? Padding(
+                              key: const ValueKey('voice-listening'),
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.redAccent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    "Mendengarkan...",
+                                    style: TextStyle(
+                                      color: Colors.redAccent,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ),
 
                     const SizedBox(height: 12),
@@ -776,6 +805,30 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _applyVoiceResult(String text) {
+    final recognizedText = text.trim();
+    if (recognizedText.isEmpty) return;
+
+    final currentText = _analysisController.text;
+    var baseText = currentText;
+
+    if (_lastVoiceInputText.isNotEmpty &&
+        currentText.endsWith(_lastVoiceInputText)) {
+      baseText = currentText
+          .substring(0, currentText.length - _lastVoiceInputText.length)
+          .trimRight();
+    }
+
+    final separator = baseText.isEmpty || baseText.endsWith('\n') ? '' : ' ';
+    final updatedText = '$baseText$separator$recognizedText';
+
+    _lastVoiceInputText = recognizedText;
+    _analysisController.value = TextEditingValue(
+      text: updatedText,
+      selection: TextSelection.collapsed(offset: updatedText.length),
     );
   }
 
