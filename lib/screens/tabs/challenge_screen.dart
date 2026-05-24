@@ -5,6 +5,7 @@ import 'package:factify/models/user_category.dart';
 import 'package:factify/services/challenge_service.dart';
 import 'package:factify/services/auth_service.dart';
 import 'package:factify/services/user_stats_service.dart';
+import 'package:factify/widgets/challenge/voice_input_button.dart';
 
 class ChallengeScreen extends StatefulWidget {
   const ChallengeScreen({super.key});
@@ -519,25 +520,53 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                     const SizedBox(height: 16),
 
                     // ANALYSIS INPUT
-                    TextField(
-                      controller: _analysisController,
-                      maxLines: 6,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText:
-                            "Tuliskan analisismu secara lengkap di sini...",
-                        hintStyle: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 13,
+                    Stack(
+                      children: [
+                        TextField(
+                          controller: _analysisController,
+                          maxLines: 6,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText:
+                                "Tuliskan analisismu secara lengkap di sini...",
+                            hintStyle: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 13,
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFF2B3039),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.only(
+                              left: 16,
+                              top: 16,
+                              right: 16,
+                              bottom: 40, // Ruang untuk tombol mic
+                            ),
+                          ),
                         ),
-                        filled: true,
-                        fillColor: const Color(0xFF2B3039),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                        Positioned(
+                          right: 8,
+                          bottom: 8,
+                          child: VoiceInputButton(
+                            onResult: (text) {
+                              // Append voice text to existing text
+                              final currentText = _analysisController.text;
+                              final newText = currentText.isEmpty 
+                                  ? text 
+                                  : '$currentText $text';
+                              _analysisController.text = newText;
+                              
+                              // Move cursor to end
+                              _analysisController.selection = TextSelection.fromPosition(
+                                TextPosition(offset: _analysisController.text.length),
+                              );
+                            },
+                          ),
                         ),
-                        contentPadding: const EdgeInsets.all(16),
-                      ),
+                      ],
                     ),
 
                     const SizedBox(height: 12),
