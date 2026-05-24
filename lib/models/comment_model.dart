@@ -33,16 +33,30 @@ class Comment {
   }
 
   factory Comment.fromJson(Map<String, dynamic> json) {
+    // Handle timestamp: could be ISO 8601 string, Firestore Timestamp, or null
+    DateTime parseTimestamp(dynamic value) {
+      if (value == null) return DateTime.now();
+      if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+      // Firestore Timestamp has toDate() method
+      if (value is DateTime) return value;
+      try {
+        // Handle Firestore Timestamp object
+        return (value as dynamic).toDate();
+      } catch (_) {
+        return DateTime.now();
+      }
+    }
+
     return Comment(
-      id: json['id'],
-      userName: json['userName'],
-      userAvatar: json['userAvatar'],
-      content: json['content'],
-      timestamp: DateTime.parse(json['timestamp']),
+      id: json['id'] ?? '',
+      userName: json['userName'] ?? 'Anonim',
+      userAvatar: json['userAvatar'] ?? '',
+      content: json['content'] ?? '',
+      timestamp: parseTimestamp(json['timestamp']),
       likes: json['likes'] ?? 0,
       isLiked: json['isLiked'] ?? false,
       replies: (json['replies'] as List?)
-              ?.map((r) => Comment.fromJson(r))
+              ?.map((r) => Comment.fromJson(Map<String, dynamic>.from(r)))
               .toList() ??
           [],
     );

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 /// Status kredibilitas hasil verifikasi
@@ -52,12 +51,7 @@ extension CredibilityStatusExtension on CredibilityStatus {
 }
 
 /// Tipe konten yang diverifikasi
-enum ContentType {
-  text,
-  url,
-  image,
-  video,
-}
+enum ContentType { text, url, image, video }
 
 extension ContentTypeExtension on ContentType {
   String get value {
@@ -134,18 +128,43 @@ class VideoAnalysisDetail {
         : null;
 
     return VideoAnalysisDetail(
-      deepfakeScore: _safeDouble(json['deepfake_score'], deepfakeAnalysis['confidence'], 0.0) * 100,
-      audioAuthenticity: _safeDouble(json['audio_authenticity'], audioAnalysis?['score'], 0.6) * 100,
-      metadataIntegrity: _safeDouble(json['metadata_integrity'], null, 0.75) * 100,
-      visualConsistency: _safeDouble(json['visual_consistency'], visualAnalysis?['consistency_score'], 0.7) * 100,
-      temporalConsistency: _safeDouble(json['temporal_consistency'], null, 0.8) * 100,
+      deepfakeScore: _safeDouble(
+            json['deepfake_score'],
+            deepfakeAnalysis['confidence'],
+            0.0,
+          ) *
+          100,
+      audioAuthenticity: _safeDouble(
+            json['audio_authenticity'],
+            audioAnalysis?['score'],
+            0.6,
+          ) *
+          100,
+      metadataIntegrity:
+          _safeDouble(json['metadata_integrity'], null, 0.75) * 100,
+      visualConsistency: _safeDouble(
+            json['visual_consistency'],
+            visualAnalysis?['consistency_score'],
+            0.7,
+          ) *
+          100,
+      temporalConsistency:
+          _safeDouble(json['temporal_consistency'], null, 0.8) * 100,
       isDeepfake: _safeBool(deepfakeAnalysis['is_deepfake'], false),
-      deepfakeConfidence: _safeDouble(deepfakeAnalysis['confidence'], null, 0.0),
+      deepfakeConfidence: _safeDouble(
+        deepfakeAnalysis['confidence'],
+        null,
+        0.0,
+      ),
       additionalData: json,
     );
   }
 
-  static double _safeDouble(dynamic primary, dynamic secondary, double fallback) {
+  static double _safeDouble(
+    dynamic primary,
+    dynamic secondary,
+    double fallback,
+  ) {
     final v = primary ?? secondary;
     if (v == null) return fallback;
     if (v is num) return v.toDouble();
@@ -182,15 +201,60 @@ class ImageAnalysisDetail {
   });
 
   factory ImageAnalysisDetail.fromJson(Map<String, dynamic> json) {
-    final aiGenerated = json['ai_generated'] as Map<String, dynamic>? ?? {};
-    
+    Map<String, dynamic> asMap(dynamic value) {
+      if (value is Map) return Map<String, dynamic>.from(value);
+      return <String, dynamic>{};
+    }
+
+    double asDouble(dynamic value, double fallback) {
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? fallback;
+      return fallback;
+    }
+
+    bool asBool(dynamic value) {
+      if (value is bool) return value;
+      if (value is String) return value.toLowerCase() == 'true';
+      return false;
+    }
+
+    final technicalAi = asMap(json['technical_ai_check']);
+    final legacyAi = asMap(json['ai_generated']);
+    final aiVision = asMap(json['ai_vision_analysis']);
+    final likelyType = aiVision['likely_type']?.toString().toLowerCase() ?? '';
+    final aiScore = asDouble(aiVision['score'], 50.0);
+    final elaScore = asDouble(
+      json['ela_score'] ?? json['ela']?['mean_ela'],
+      0.5,
+    );
+    final copyMove = asBool(json['copy_move_detected']);
+    final isAiGenerated = asBool(legacyAi['is_ai_generated']) ||
+        asBool(technicalAi['is_ai_generated']) ||
+        likelyType == 'ai_generated';
+    final aiConfidence = asDouble(
+      legacyAi['confidence'] ?? technicalAi['confidence'],
+      aiVision.isNotEmpty
+          ? (100 - aiScore).clamp(0, 100).toDouble() / 100
+          : 0.0,
+    );
+    final manipulationScore = asDouble(
+      json['manipulation_score'],
+      [
+        elaScore,
+        copyMove ? 0.8 : 0.0,
+        asBool(aiVision['is_fake'])
+            ? (100 - aiScore).clamp(0, 100).toDouble() / 100
+            : 0.0,
+      ].reduce((a, b) => a > b ? a : b),
+    );
+
     return ImageAnalysisDetail(
-      elaScore: (json['ela_score'] ?? json['ela']?['mean_ela'] ?? 0.5).toDouble() * 100,
-      manipulationScore: (json['manipulation_score'] ?? 0.3).toDouble() * 100,
-      isAiGenerated: aiGenerated['is_ai_generated'] ?? false,
-      aiGeneratedConfidence: (aiGenerated['confidence'] ?? 0.0).toDouble(),
-      copyMoveDetected: json['copy_move_detected'] ?? false,
-      exifData: json['exif'] as Map<String, dynamic>? ?? {},
+      elaScore: elaScore * 100,
+      manipulationScore: manipulationScore * 100,
+      isAiGenerated: isAiGenerated,
+      aiGeneratedConfidence: aiConfidence,
+      copyMoveDetected: copyMove,
+      exifData: asMap(json['exif']),
       additionalData: json,
     );
   }
@@ -201,7 +265,7 @@ class UrlAnalysisDetail {
   final String domain;
   final bool sslEnabled;
   final double domainScore;
-  final int? domainAgeYears;
+  final double? domainAgeYears;
   final bool isTrustedDomain;
   final List<String> suspiciousPatterns;
   final Map<String, dynamic> additionalData;
@@ -217,11 +281,24 @@ class UrlAnalysisDetail {
   });
 
   factory UrlAnalysisDetail.fromJson(Map<String, dynamic> json) {
+    double safeDouble(dynamic value, double fallback) {
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? fallback;
+      return fallback;
+    }
+
+    double? safeNullableDouble(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toDouble();
+      if (value is String) return double.tryParse(value);
+      return null;
+    }
+
     return UrlAnalysisDetail(
-      domain: json['domain'] ?? '',
-      sslEnabled: json['ssl_enabled'] ?? false,
-      domainScore: (json['domain_score'] ?? 0.5).toDouble() * 100,
-      domainAgeYears: json['domain_age']?['age_years'],
+      domain: json['domain']?.toString() ?? '',
+      sslEnabled: json['ssl_enabled'] == true,
+      domainScore: safeDouble(json['domain_score'], 0.5) * 100,
+      domainAgeYears: safeNullableDouble(json['domain_age']?['age_years']),
       isTrustedDomain: json['is_trusted_domain'] ?? false,
       suspiciousPatterns: List<String>.from(json['suspicious_patterns'] ?? []),
       additionalData: json,
@@ -251,7 +328,7 @@ class TextAnalysisDetail {
 
   factory TextAnalysisDetail.fromJson(Map<String, dynamic> json) {
     final sentiment = json['sentiment'] as Map<String, dynamic>? ?? {};
-    
+
     return TextAnalysisDetail(
       hoaxScore: (json['hoax_score'] ?? 0.0).toDouble() * 100,
       clickbaitScore: (json['clickbait_score'] ?? 0.0).toDouble() * 100,
@@ -280,7 +357,7 @@ class VerificationResult {
   final Map<String, dynamic> detailedAnalysis;
   final double analysisTime;
   final DateTime timestamp;
-  
+
   // Type-specific analysis details
   final TextAnalysisDetail? textDetail;
   final UrlAnalysisDetail? urlDetail;
@@ -345,15 +422,15 @@ class VerificationResult {
     if (hexColor == null || hexColor.isEmpty) {
       return const Color(0xFF4ECDC4);
     }
-    
+
     // Remove # if present
     String hex = hexColor.replaceAll('#', '');
-    
+
     // Add FF for alpha if not present
     if (hex.length == 6) {
       hex = 'FF$hex';
     }
-    
+
     try {
       return Color(int.parse(hex, radix: 16));
     } catch (e) {
@@ -371,20 +448,22 @@ class VerificationResult {
 
   /// Factory constructor untuk membuat dari JSON response
   factory VerificationResult.fromJson(Map<String, dynamic> json) {
-    final contentTypeStr = json['content_type'] is String ? json['content_type'] as String : 'text';
+    final contentTypeStr = json['content_type'] is String
+        ? json['content_type'] as String
+        : 'text';
     final contentType = _parseContentType(contentTypeStr);
     final rawDetailed = json['detailed_analysis'];
     final detailedAnalysis = rawDetailed is Map
-        ? Map<String, dynamic>.from(rawDetailed as Map)
+        ? Map<String, dynamic>.from(rawDetailed)
         : <String, dynamic>{};
     final score = _safeDoubleFromJson(json['score'], 50.0);
-    
+
     // Parse type-specific details
     TextAnalysisDetail? textDetail;
     UrlAnalysisDetail? urlDetail;
     ImageAnalysisDetail? imageDetail;
     VideoAnalysisDetail? videoDetail;
-    
+
     switch (contentType) {
       case ContentType.text:
         textDetail = TextAnalysisDetail.fromJson(detailedAnalysis);
@@ -399,30 +478,35 @@ class VerificationResult {
         videoDetail = VideoAnalysisDetail.fromJson(detailedAnalysis);
         break;
     }
-    
+
     // Generate default values jika kosong
     final aiSummary = _getDefaultIfEmpty(
       json['ai_summary'],
       _generateDefaultAiSummary(contentType, score, detailedAnalysis),
     );
-    
+
     final mainFindings = _getDefaultIfEmpty(
       json['main_findings'],
       _generateDefaultFindings(contentType, score, detailedAnalysis),
     );
-    
+
     final needAttention = _getDefaultIfEmpty(
       json['need_attention'],
       _generateDefaultWarnings(contentType, score, detailedAnalysis),
     );
-    
+
     final aboutSource = _getDefaultIfEmpty(
       json['about_source'],
-      _generateDefaultSourceInfo(contentType, json['source'] ?? '', detailedAnalysis),
+      _generateDefaultSourceInfo(
+        contentType,
+        json['source'] ?? '',
+        detailedAnalysis,
+      ),
     );
-    
+
     return VerificationResult(
-      requestId: json['request_id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      requestId: json['request_id']?.toString() ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       contentType: contentType,
       score: score,
       confidence: _safeDoubleFromJson(json['confidence'], 0.7),
@@ -435,7 +519,7 @@ class VerificationResult {
       aboutSource: aboutSource,
       detailedAnalysis: detailedAnalysis,
       analysisTime: _safeDoubleFromJson(json['analysis_time'], 0.0),
-      timestamp: json['timestamp'] != null 
+      timestamp: json['timestamp'] != null
           ? DateTime.tryParse(json['timestamp']) ?? DateTime.now()
           : DateTime.now(),
       textDetail: textDetail,
@@ -444,7 +528,7 @@ class VerificationResult {
       videoDetail: videoDetail,
     );
   }
-  
+
   /// Helper untuk mendapatkan default jika string kosong
   static String _getDefaultIfEmpty(dynamic value, String defaultValue) {
     if (value == null || value.toString().trim().isEmpty) {
@@ -452,11 +536,15 @@ class VerificationResult {
     }
     return value.toString();
   }
-  
+
   /// Generate default AI summary berdasarkan score dan content type
-  static String _generateDefaultAiSummary(ContentType contentType, double score, Map<String, dynamic> data) {
+  static String _generateDefaultAiSummary(
+    ContentType contentType,
+    double score,
+    Map<String, dynamic> data,
+  ) {
     String summary;
-    
+
     if (score >= 80) {
       summary = '✅ Konten ini memiliki tingkat kredibilitas tinggi. ';
     } else if (score >= 60) {
@@ -464,9 +552,10 @@ class VerificationResult {
     } else if (score >= 40) {
       summary = '🔍 Konten ini memerlukan verifikasi lebih lanjut. ';
     } else {
-      summary = '❌ Konten ini memiliki banyak indikator yang perlu diperhatikan. ';
+      summary =
+          '❌ Konten ini memiliki banyak indikator yang perlu diperhatikan. ';
     }
-    
+
     switch (contentType) {
       case ContentType.text:
         final hoaxScore = (data['hoax_score'] ?? 0.0) as num;
@@ -501,25 +590,29 @@ class VerificationResult {
         summary += 'Analisis keaslian video telah dilakukan.';
         break;
     }
-    
+
     return summary;
   }
-  
+
   /// Generate default findings
-  static String _generateDefaultFindings(ContentType contentType, double score, Map<String, dynamic> data) {
+  static String _generateDefaultFindings(
+    ContentType contentType,
+    double score,
+    Map<String, dynamic> data,
+  ) {
     List<String> findings = [];
-    
+
     switch (contentType) {
       case ContentType.text:
         final wordCount = data['word_count'] ?? 0;
         findings.add('• Panjang teks: $wordCount kata');
-        
+
         final sentiment = data['sentiment'] as Map<String, dynamic>?;
         if (sentiment != null) {
           final label = sentiment['label'] ?? 'neutral';
           findings.add('• Sentimen: ${_getSentimentLabel(label)}');
         }
-        
+
         final credScore = (data['credibility_score'] ?? 0.0) as num;
         if (credScore > 0.5) {
           findings.add('• Teks menyertakan referensi/sumber');
@@ -527,77 +620,100 @@ class VerificationResult {
           findings.add('• Tidak ada referensi sumber yang jelas');
         }
         break;
-        
+
       case ContentType.url:
         final domain = data['domain'] ?? '';
         if (domain.isNotEmpty) {
           findings.add('• Domain: $domain');
         }
         final sslEnabled = data['ssl_enabled'] ?? false;
-        findings.add('• Keamanan HTTPS: ${sslEnabled ? "Aktif ✓" : "Tidak Aktif ✗"}');
-        
+        findings.add(
+          '• Keamanan HTTPS: ${sslEnabled ? "Aktif ✓" : "Tidak Aktif ✗"}',
+        );
+
         final domainAge = data['domain_age'] as Map<String, dynamic>?;
         if (domainAge?['age_years'] != null) {
           findings.add('• Usia domain: ${domainAge!['age_years']} tahun');
         }
         break;
-        
+
       case ContentType.image:
-        final elaScore = (data['ela_score'] ?? data['ela']?['mean_ela'] ?? 0.5) as num;
-        findings.add('• Skor ELA Analysis: ${(elaScore * 100).toStringAsFixed(0)}%');
-        
+        final elaScore =
+            (data['ela_score'] ?? data['ela']?['mean_ela'] ?? 0.5) as num;
+        findings.add(
+          '• Skor ELA Analysis: ${(elaScore * 100).toStringAsFixed(0)}%',
+        );
+
         final manipScore = (data['manipulation_score'] ?? 0.3) as num;
-        findings.add('• Skor Manipulasi: ${(manipScore * 100).toStringAsFixed(0)}%');
-        
+        findings.add(
+          '• Skor Manipulasi: ${(manipScore * 100).toStringAsFixed(0)}%',
+        );
+
         final aiGen = data['ai_generated'] as Map<String, dynamic>?;
         if (aiGen != null) {
           final isAi = aiGen['is_ai_generated'] ?? false;
-          findings.add('• Deteksi AI: ${isAi ? "Terdeteksi" : "Tidak Terdeteksi"}');
+          findings.add(
+            '• Deteksi AI: ${isAi ? "Terdeteksi" : "Tidak Terdeteksi"}',
+          );
         }
         break;
-        
+
       case ContentType.video:
-        final deepfakeConf = (data['deepfake_analysis']?['confidence'] ?? 0.0) as num;
-        findings.add('• Skor Deepfake: ${(deepfakeConf * 100).toStringAsFixed(0)}%');
-        
+        final deepfakeConf =
+            (data['deepfake_analysis']?['confidence'] ?? 0.0) as num;
+        findings.add(
+          '• Skor Deepfake: ${(deepfakeConf * 100).toStringAsFixed(0)}%',
+        );
+
         final audioAuth = (data['audio_analysis']?['score'] ?? 0.6) as num;
-        findings.add('• Keaslian Audio: ${(audioAuth * 100).toStringAsFixed(0)}%');
-        
-        final visualCons = (data['visual_analysis']?['consistency_score'] ?? 0.7) as num;
-        findings.add('• Konsistensi Visual: ${(visualCons * 100).toStringAsFixed(0)}%');
+        findings.add(
+          '• Keaslian Audio: ${(audioAuth * 100).toStringAsFixed(0)}%',
+        );
+
+        final visualCons =
+            (data['visual_analysis']?['consistency_score'] ?? 0.7) as num;
+        findings.add(
+          '• Konsistensi Visual: ${(visualCons * 100).toStringAsFixed(0)}%',
+        );
         break;
     }
-    
+
     if (findings.isEmpty) {
       findings.add('• Analisis dasar telah dilakukan');
       findings.add('• Tidak ada temuan signifikan');
     }
-    
+
     return findings.join('\n');
   }
-  
+
   /// Generate default warnings
-  static String _generateDefaultWarnings(ContentType contentType, double score, Map<String, dynamic> data) {
+  static String _generateDefaultWarnings(
+    ContentType contentType,
+    double score,
+    Map<String, dynamic> data,
+  ) {
     List<String> warnings = [];
-    
+
     if (score < 40) {
       warnings.add('⚠️ Skor kredibilitas rendah - perlu verifikasi mendalam');
     } else if (score < 60) {
       warnings.add('⚠️ Skor kredibilitas sedang - disarankan cross-check');
     }
-    
+
     switch (contentType) {
       case ContentType.text:
         final hoaxScore = (data['hoax_score'] ?? 0.0) as num;
         if (hoaxScore > 0.5) {
-          warnings.add('⚠️ Terdeteksi kata kunci yang sering digunakan dalam hoax');
+          warnings.add(
+            '⚠️ Terdeteksi kata kunci yang sering digunakan dalam hoax',
+          );
         }
         final clickbaitScore = (data['clickbait_score'] ?? 0.0) as num;
         if (clickbaitScore > 0.5) {
           warnings.add('⚠️ Pola penulisan clickbait terdeteksi');
         }
         break;
-        
+
       case ContentType.url:
         final sslEnabled = data['ssl_enabled'] ?? false;
         if (sslEnabled != true) {
@@ -608,7 +724,7 @@ class VerificationResult {
           warnings.add('⚠️ Ditemukan ${patterns.length} pola mencurigakan');
         }
         break;
-        
+
       case ContentType.image:
         final aiGen = data['ai_generated'] as Map<String, dynamic>?;
         if (aiGen?['is_ai_generated'] == true) {
@@ -618,7 +734,7 @@ class VerificationResult {
           warnings.add('⚠️ Terdeteksi kemungkinan copy-move forgery');
         }
         break;
-        
+
       case ContentType.video:
         final deepfake = data['deepfake_analysis'] as Map<String, dynamic>?;
         if (deepfake?['is_deepfake'] == true) {
@@ -626,25 +742,29 @@ class VerificationResult {
         }
         break;
     }
-    
+
     if (warnings.isEmpty) {
       warnings.add('✓ Tidak ada peringatan khusus');
     }
-    
+
     return warnings.join('\n');
   }
-  
+
   /// Generate default source info
-  static String _generateDefaultSourceInfo(ContentType contentType, String source, Map<String, dynamic> data) {
+  static String _generateDefaultSourceInfo(
+    ContentType contentType,
+    String source,
+    Map<String, dynamic> data,
+  ) {
     List<String> info = [];
-    
+
     switch (contentType) {
       case ContentType.text:
         final wordCount = data['word_count'] ?? 0;
         info.add('📝 Jenis: Teks');
         info.add('📏 Jumlah kata: $wordCount');
         break;
-        
+
       case ContentType.url:
         final domain = data['domain'] ?? '';
         info.add('🔗 Jenis: URL/Website');
@@ -652,32 +772,38 @@ class VerificationResult {
           info.add('🌐 Domain: $domain');
         }
         break;
-        
+
       case ContentType.image:
         final imgInfo = data['image_info'] as Map<String, dynamic>?;
         info.add('🖼️ Jenis: Gambar');
         if (imgInfo != null) {
-          info.add('📐 Resolusi: ${imgInfo['width'] ?? 0}x${imgInfo['height'] ?? 0} pixels');
+          info.add(
+            '📐 Resolusi: ${imgInfo['width'] ?? 0}x${imgInfo['height'] ?? 0} pixels',
+          );
         }
         break;
-        
+
       case ContentType.video:
         final vidInfo = data['video_info'] as Map<String, dynamic>?;
         info.add('🎬 Jenis: Video');
         if (vidInfo != null) {
           info.add('⏱️ Durasi: ${vidInfo['duration'] ?? 0} detik');
-          info.add('📐 Resolusi: ${vidInfo['width'] ?? 0}x${vidInfo['height'] ?? 0}');
+          info.add(
+            '📐 Resolusi: ${vidInfo['width'] ?? 0}x${vidInfo['height'] ?? 0}',
+          );
         }
         break;
     }
-    
+
     if (source.isNotEmpty) {
-      info.add('📍 Sumber: ${source.length > 50 ? '${source.substring(0, 50)}...' : source}');
+      info.add(
+        '📍 Sumber: ${source.length > 50 ? '${source.substring(0, 50)}...' : source}',
+      );
     }
-    
+
     return info.join('\n');
   }
-  
+
   /// Helper untuk label sentiment
   static String _getSentimentLabel(String label) {
     switch (label.toLowerCase()) {

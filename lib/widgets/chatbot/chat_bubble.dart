@@ -50,8 +50,8 @@ class ChatBubble extends StatelessWidget {
                           )
                         : LinearGradient(
                             colors: [
-                              const Color(0xFF2D2D44).withOpacity(0.8),
-                              const Color(0xFF2D2D44).withOpacity(0.6),
+                              const Color(0xFF2D2D44).withValues(alpha: 0.8),
+                              const Color(0xFF2D2D44).withValues(alpha: 0.6),
                             ],
                           ),
                     borderRadius: BorderRadius.only(
@@ -63,14 +63,14 @@ class ChatBubble extends StatelessWidget {
                     border: Border.all(
                       color: message.isUser
                           ? Colors.transparent
-                          : Colors.white.withOpacity(0.1),
+                          : Colors.white.withValues(alpha: 0.1),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: message.isUser
-                            ? const Color(0xFF4ECDC4).withOpacity(0.3)
-                            : Colors.black.withOpacity(0.2),
+                            ? const Color(0xFF4ECDC4).withValues(alpha: 0.3)
+                            : Colors.black.withValues(alpha: 0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -130,7 +130,7 @@ class ChatBubble extends StatelessWidget {
             child: Text(
               DateFormat('HH:mm').format(message.timestamp),
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 fontSize: 11,
               ),
             ),
@@ -158,7 +158,7 @@ class ChatBubble extends StatelessWidget {
             color: (message.isUser
                     ? const Color(0xFF4ECDC4)
                     : const Color(0xFF6C5CE7))
-                .withOpacity(0.3),
+                .withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -197,8 +197,8 @@ class ChatBubble extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF2D2D44).withOpacity(0.8),
-                  const Color(0xFF2D2D44).withOpacity(0.6),
+                  const Color(0xFF2D2D44).withValues(alpha: 0.8),
+                  const Color(0xFF2D2D44).withValues(alpha: 0.6),
                 ],
               ),
               borderRadius: const BorderRadius.only(
@@ -208,7 +208,7 @@ class ChatBubble extends StatelessWidget {
                 bottomRight: Radius.circular(16),
               ),
               border: Border.all(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 width: 1,
               ),
             ),
@@ -262,7 +262,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3 + (opacity * 0.7)),
+                color: Colors.white.withValues(alpha: 0.3 + (opacity * 0.7)),
                 shape: BoxShape.circle,
               ),
             );

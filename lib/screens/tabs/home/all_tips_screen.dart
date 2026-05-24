@@ -21,7 +21,7 @@ class AllTipsScreen extends StatelessWidget {
             colors: [
               const Color(0xFF0F0F1E),
               const Color(0xFF1A1A2E),
-              const Color(0xFF16213E).withOpacity(0.8),
+              const Color(0xFF16213E).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -43,13 +43,13 @@ class AllTipsScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                const Color(0xFF2D2D44).withOpacity(0.6),
-                                const Color(0xFF2D2D44).withOpacity(0.3),
+                                const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                                const Color(0xFF2D2D44).withValues(alpha: 0.3),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.1),
+                              color: Colors.white.withValues(alpha: 0.1),
                               width: 1,
                             ),
                           ),
@@ -79,7 +79,7 @@ class AllTipsScreen extends StatelessWidget {
                           Text(
                             '${tips.length} Tips Tersedia',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                               fontSize: 14,
                             ),
                           ),
@@ -132,13 +132,13 @@ class AllTipsScreen extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                (tip['color'] as Color).withOpacity(0.15),
-                (tip['color'] as Color).withOpacity(0.05),
+                (tip['color'] as Color).withValues(alpha: 0.15),
+                (tip['color'] as Color).withValues(alpha: 0.05),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: (tip['color'] as Color).withOpacity(0.3),
+              color: (tip['color'] as Color).withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -151,7 +151,7 @@ class AllTipsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: (tip['color'] as Color).withOpacity(0.4),
+                      color: (tip['color'] as Color).withValues(alpha: 0.4),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -180,7 +180,7 @@ class AllTipsScreen extends StatelessWidget {
                     Text(
                       tip['subtitle'],
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                         height: 1.4,
                       ),
@@ -193,7 +193,7 @@ class AllTipsScreen extends StatelessWidget {
               const SizedBox(width: 8),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 size: 16,
               ),
             ],

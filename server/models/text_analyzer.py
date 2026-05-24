@@ -79,6 +79,7 @@ class TextAnalyzer(BaseAnalyzer):
         self.tokenizer = None
         self.sentiment_model = None
         self.stemmer = None
+        self.genai_model = None
         
     def initialize(self) -> bool:
         """Initialize NLP models"""
@@ -101,8 +102,9 @@ class TextAnalyzer(BaseAnalyzer):
                         {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
                     ]
                     
-                    self.genai_model = genai.GenerativeModel('gemini-1.5-pro', safety_settings=safety_settings)
-                    print("[TextAnalyzer] Gemini AI initialized for semantic analysis")
+                    model_name = os.getenv('GEMINI_TEXT_MODEL', 'gemini-1.5-pro')
+                    self.genai_model = genai.GenerativeModel(model_name, safety_settings=safety_settings)
+                    print(f"[TextAnalyzer] Gemini AI initialized for semantic analysis: {model_name}")
                 except Exception as e:
                     print(f"[TextAnalyzer] Failed to initialize Gemini: {e}")
                     self.genai_model = None
@@ -110,21 +112,28 @@ class TextAnalyzer(BaseAnalyzer):
                 print("[TextAnalyzer] No GEMINI_API_KEY found. Skipping LLM initialization.")
                 self.genai_model = None
             
-            # Import libraries
-            import torch as _torch
-            torch = _torch
-            
-            from transformers import AutoTokenizer, AutoModelForSequenceClassification
-            transformers = True
-            
-            # Load Indonesian BERT untuk sentiment analysis
-            model_name = "mdhugol/indonesia-bert-sentiment-classification"
-            
-            print(f"[TextAnalyzer] Loading model: {model_name}")
-            
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-            self.sentiment_model = AutoModelForSequenceClassification.from_pretrained(model_name)
-            self.sentiment_model.eval()
+            # Import local NLP stack if available. Missing model dependencies must
+            # not disable text verification, because rule-based + Gemini analysis
+            # can still provide useful results.
+            try:
+                import torch as _torch
+                torch = _torch
+                
+                from transformers import AutoTokenizer, AutoModelForSequenceClassification
+                transformers = True
+                
+                # Load Indonesian BERT untuk sentiment analysis
+                model_name = "mdhugol/indonesia-bert-sentiment-classification"
+                
+                print(f"[TextAnalyzer] Loading model: {model_name}")
+                
+                self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+                self.sentiment_model = AutoModelForSequenceClassification.from_pretrained(model_name)
+                self.sentiment_model.eval()
+            except Exception as e:
+                print(f"[TextAnalyzer] Sentiment model unavailable, using rule-based fallback: {e}")
+                self.tokenizer = None
+                self.sentiment_model = None
             
             # Load Sastrawi stemmer untuk Indonesian
             try:

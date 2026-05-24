@@ -1,0 +1,8 @@
+# Optional local NLP stack for TextAnalyzer sentiment/stemming.
+# Install this only when you want local IndoBERT sentiment analysis in addition
+# to Gemini + rule-based analysis:
+#   pip install -r requirements-ml.txt
+
+torch>=2.1.0
+transformers>=4.36.0
+Sastrawi>=1.0.1

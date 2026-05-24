@@ -34,7 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   
   // Settings
   bool _notificationsEnabled = true;
-  bool _darkModeEnabled = true;
 
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
@@ -112,14 +111,12 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
-      _darkModeEnabled = prefs.getBool('dark_mode_enabled') ?? true;
     });
   }
 
   Future<void> _saveSettings() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('notifications_enabled', _notificationsEnabled);
-    await prefs.setBool('dark_mode_enabled', _darkModeEnabled);
   }
 
   Future<void> _handleLogout() async {
@@ -134,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFFF6B6B).withOpacity(0.2),
+                color: const Color(0xFFFF6B6B).withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(Icons.logout, color: Color(0xFFFF6B6B)),
@@ -245,17 +242,6 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               },
             ),
             const SizedBox(height: 12),
-            _buildToggleTile(
-              icon: Icons.dark_mode_outlined,
-              title: 'Mode Gelap',
-              subtitle: 'Tampilan tema gelap',
-              value: _darkModeEnabled,
-              onChanged: (val) {
-                setState(() => _darkModeEnabled = val);
-                _saveSettings();
-              },
-            ),
-            const SizedBox(height: 12),
             _buildActionTile(
               icon: Icons.delete_outline,
               title: 'Hapus Data Lokal',
@@ -263,32 +249,47 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               color: Colors.orange,
               onTap: () async {
                 Navigator.pop(context);
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.clear();
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Data lokal berhasil dihapus'),
-                    backgroundColor: Color(0xFF4ECDC4),
+                
+                // Show confirmation dialog
+                bool? confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    backgroundColor: const Color(0xFF2D2D44),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    title: const Text('Hapus Data Lokal?', style: TextStyle(color: Colors.white)),
+                    content: const Text(
+                      'Apakah Anda yakin? Semua cache, riwayat, dan preferensi lokal akan dihapus.',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        child: const Text('Hapus'),
+                      ),
+                    ],
                   ),
                 );
-                _loadStats();
-              },
-            ),
-            const SizedBox(height: 12),
-            _buildActionTile(
-              icon: Icons.security,
-              title: 'Keamanan Akun',
-              subtitle: 'Kelola password dan 2FA',
-              color: const Color(0xFF4ECDC4),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fitur keamanan lanjutan akan hadir di update berikutnya'),
-                    backgroundColor: Color(0xFF4ECDC4),
-                  ),
-                );
+
+                if (confirm == true) {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.clear();
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Data lokal berhasil dihapus'),
+                      backgroundColor: Color(0xFF4ECDC4),
+                    ),
+                  );
+                  _loadStats();
+                }
               },
             ),
             const SizedBox(height: 24),
@@ -586,12 +587,12 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF4ECDC4).withOpacity(0.2),
-            const Color(0xFF44A08D).withOpacity(0.1),
+            const Color(0xFF4ECDC4).withValues(alpha: 0.2),
+            const Color(0xFF44A08D).withValues(alpha: 0.1),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF4ECDC4).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF4ECDC4).withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -605,7 +606,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4ECDC4).withOpacity(0.4),
+                      color: const Color(0xFF4ECDC4).withValues(alpha: 0.4),
                       blurRadius: 20,
                       spreadRadius: 2,
                     ),
@@ -644,7 +645,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF4ECDC4).withOpacity(0.4),
+                          color: const Color(0xFF4ECDC4).withValues(alpha: 0.4),
                           blurRadius: 8,
                         ),
                       ],
@@ -712,9 +713,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -763,14 +764,14 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       decoration: BoxDecoration(
         color: const Color(0xFF2D2D44),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 22),
@@ -817,7 +818,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 22),
@@ -867,11 +868,11 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               ],
             ),
           ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: const Color(0xFF4ECDC4),
-          ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeThumbColor: const Color(0xFF4ECDC4),
+            ),
         ],
       ),
     );
@@ -920,7 +921,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFF6B6B).withOpacity(0.3),
+            color: const Color(0xFFFF6B6B).withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),

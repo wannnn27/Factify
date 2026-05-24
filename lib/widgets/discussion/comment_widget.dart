@@ -29,7 +29,7 @@ class CommentWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: isReply
             ? Border.all(
-                color: const Color(0xFF4ECDC4).withOpacity(0.3),
+                color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
               )
             : null,
       ),

@@ -121,7 +121,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             colors: [
               const Color(0xFF0F0F1E),
               const Color(0xFF1A1A2E),
-              const Color(0xFF16213E).withOpacity(0.8),
+              const Color(0xFF16213E).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -176,13 +176,13 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF2D2D44).withOpacity(0.6),
-                      const Color(0xFF2D2D44).withOpacity(0.3),
+                      const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                      const Color(0xFF2D2D44).withValues(alpha: 0.3),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     width: 1,
                   ),
                 ),
@@ -207,7 +207,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
                 Text(
                   'Verifikasi Informasi AI',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 12,
                   ),
                 ),
@@ -251,14 +251,14 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Colors.white.withOpacity(0.95),
-              Colors.white.withOpacity(0.9),
+              Colors.white.withValues(alpha: 0.95),
+              Colors.white.withValues(alpha: 0.9),
             ],
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF4ECDC4).withOpacity(0.2),
+              color: const Color(0xFF4ECDC4).withValues(alpha: 0.2),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -317,13 +317,13 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2D2D44).withOpacity(0.6),
-            const Color(0xFF2D2D44).withOpacity(0.4),
+            const Color(0xFF2D2D44).withValues(alpha: 0.6),
+            const Color(0xFF2D2D44).withValues(alpha: 0.4),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -336,7 +336,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF4ECDC4).withOpacity(0.3),
+              color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -413,13 +413,13 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF2D2D44).withOpacity(0.6),
-                  const Color(0xFF2D2D44).withOpacity(0.4),
+                  const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                  const Color(0xFF2D2D44).withValues(alpha: 0.4),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 width: 1,
               ),
             ),
@@ -466,13 +466,13 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF2D2D44).withOpacity(0.6),
-                  const Color(0xFF2D2D44).withOpacity(0.4),
+                  const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                  const Color(0xFF2D2D44).withValues(alpha: 0.4),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 width: 1,
               ),
             ),
@@ -523,13 +523,13 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF4ECDC4).withOpacity(0.15),
-                  const Color(0xFF4ECDC4).withOpacity(0.05),
+                  const Color(0xFF4ECDC4).withValues(alpha: 0.15),
+                  const Color(0xFF4ECDC4).withValues(alpha: 0.05),
                 ],
               ),
               shape: BoxShape.circle,
               border: Border.all(
-                color: const Color(0xFF4ECDC4).withOpacity(0.3),
+                color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -553,7 +553,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
           Text(
             'Ambil foto atau pilih dari galeri untuk\nmemverifikasi keaslian gambar',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 14,
               height: 1.5,
             ),
@@ -595,13 +595,13 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF6C5CE7).withOpacity(0.15),
-                  const Color(0xFF6C5CE7).withOpacity(0.05),
+                  const Color(0xFF6C5CE7).withValues(alpha: 0.15),
+                  const Color(0xFF6C5CE7).withValues(alpha: 0.05),
                 ],
               ),
               shape: BoxShape.circle,
               border: Border.all(
-                color: const Color(0xFF6C5CE7).withOpacity(0.3),
+                color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -625,7 +625,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
           Text(
             'Upload video atau masukkan URL video\nuntuk analisis deepfake & manipulasi',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 14,
               height: 1.5,
             ),
@@ -639,13 +639,13 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF2D2D44).withOpacity(0.6),
-                  const Color(0xFF2D2D44).withOpacity(0.4),
+                  const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                  const Color(0xFF2D2D44).withValues(alpha: 0.4),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 width: 1,
               ),
             ),
@@ -679,19 +679,19 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
           // Divider
           Row(
             children: [
-              Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   'ATAU',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
             ],
           ),
           
@@ -730,13 +730,13 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2D2D44).withOpacity(0.4),
-            const Color(0xFF2D2D44).withOpacity(0.2),
+            const Color(0xFF2D2D44).withValues(alpha: 0.4),
+            const Color(0xFF2D2D44).withValues(alpha: 0.2),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -787,7 +787,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
           Text(
             text,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
               fontSize: 13,
             ),
           ),
@@ -834,7 +834,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4ECDC4).withOpacity(0.4),
+                color: const Color(0xFF4ECDC4).withValues(alpha: 0.4),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
@@ -898,7 +898,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             ),
           ),
           elevation: isPrimary ? 4 : 0,
-          shadowColor: isPrimary ? buttonColor.withOpacity(0.4) : Colors.transparent,
+          shadowColor: isPrimary ? buttonColor.withValues(alpha: 0.4) : Colors.transparent,
         ),
       ),
     );
@@ -908,10 +908,10 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF4ECDC4).withOpacity(0.1),
+        color: const Color(0xFF4ECDC4).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF4ECDC4).withOpacity(0.3),
+          color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -923,7 +923,7 @@ class _VerysenseScreenState extends State<VerysenseScreen> with SingleTickerProv
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 fontSize: 11,
                 height: 1.4,
               ),
@@ -1004,7 +1004,7 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
             colors: [
               const Color(0xFF0F0F1E),
               const Color(0xFF1A1A2E),
-              const Color(0xFF16213E).withOpacity(0.8),
+              const Color(0xFF16213E).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -1085,13 +1085,13 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF2D2D44).withOpacity(0.6),
-                      const Color(0xFF2D2D44).withOpacity(0.3),
+                      const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                      const Color(0xFF2D2D44).withValues(alpha: 0.3),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     width: 1,
                   ),
                 ),
@@ -1115,7 +1115,7 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
                 Text(
                   'Hasil Verifikasi Verysense',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 11,
                   ),
                 ),
@@ -1133,14 +1133,14 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.95),
-            Colors.white.withOpacity(0.9),
+            Colors.white.withValues(alpha: 0.95),
+            Colors.white.withValues(alpha: 0.9),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: (data['statusColor'] as Color).withOpacity(0.3),
+            color: (data['statusColor'] as Color).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -1201,7 +1201,7 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: (data['statusColor'] as Color).withOpacity(0.4),
+                  color: (data['statusColor'] as Color).withValues(alpha: 0.4),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -1245,13 +1245,13 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2D2D44).withOpacity(0.6),
-            const Color(0xFF2D2D44).withOpacity(0.4),
+            const Color(0xFF2D2D44).withValues(alpha: 0.6),
+            const Color(0xFF2D2D44).withValues(alpha: 0.4),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -1275,7 +1275,7 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
                 Text(
                   'Sumber ${_getTitle()}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 12,
                   ),
                 ),
@@ -1304,13 +1304,13 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF6C5CE7).withOpacity(0.15),
-            const Color(0xFF6C5CE7).withOpacity(0.05),
+            const Color(0xFF6C5CE7).withValues(alpha: 0.15),
+            const Color(0xFF6C5CE7).withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF6C5CE7).withOpacity(0.3),
+          color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -1362,7 +1362,7 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
               Text(
                 label,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 13,
                 ),
               ),
@@ -1381,7 +1381,7 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: score / 100,
-              backgroundColor: Colors.white.withOpacity(0.1),
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(color),
               minHeight: 6,
             ),
@@ -1408,13 +1408,13 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFF2D2D44).withOpacity(0.6),
-                const Color(0xFF2D2D44).withOpacity(0.4),
+                const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                const Color(0xFF2D2D44).withValues(alpha: 0.4),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               width: 1,
             ),
           ),
@@ -1426,7 +1426,7 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4ECDC4).withOpacity(0.2),
+                      color: const Color(0xFF4ECDC4).withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(icon, color: const Color(0xFF4ECDC4), size: 18),
@@ -1454,13 +1454,13 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     content,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 13,
                       height: 1.6,
                     ),
@@ -1533,13 +1533,13 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFF2D2D44).withOpacity(0.4),
-                const Color(0xFF2D2D44).withOpacity(0.2),
+                const Color(0xFF2D2D44).withValues(alpha: 0.4),
+                const Color(0xFF2D2D44).withValues(alpha: 0.2),
               ],
             ),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               width: 1,
             ),
           ),
@@ -1559,7 +1559,7 @@ class _VerysenseResultScreenState extends State<VerysenseResultScreen> {
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 size: 16,
               ),
             ],

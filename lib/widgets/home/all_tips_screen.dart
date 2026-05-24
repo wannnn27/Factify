@@ -32,7 +32,7 @@ class AllTipsScreen extends StatelessWidget {
             colors: [
               const Color(0xFF0F0F1E),
               const Color(0xFF1A1A2E),
-              const Color(0xFF16213E).withOpacity(0.8),
+              const Color(0xFF16213E).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -63,11 +63,11 @@ class AllTipsScreen extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
+                        colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
                       ),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: color.withOpacity(0.4), width: 1.5),
-                      boxShadow: [BoxShadow(color: color.withOpacity(0.2), blurRadius: 12, offset: const Offset(0, 6))],
+                      border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
+                      boxShadow: [BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 12, offset: const Offset(0, 6))],
                     ),
                     child: Row(
                       children: [
@@ -79,11 +79,11 @@ class AllTipsScreen extends StatelessWidget {
                             height: 80,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Container(
-                              color: color.withOpacity(0.3),
+                              color: color.withValues(alpha: 0.3),
                               child: const Center(child: CircularProgressIndicator(color: Colors.white54)),
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: color.withOpacity(0.3),
+                              color: color.withValues(alpha: 0.3),
                               child: Icon(tip['icon'], color: Colors.white, size: 40),
                             ),
                           ),
@@ -100,12 +100,12 @@ class AllTipsScreen extends StatelessWidget {
                               const SizedBox(height: 6),
                               Text(
                                 tip['shortDescription'],
-                                style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14, height: 1.4),
+                                style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14, height: 1.4),
                               ),
                             ],
                           ),
                         ),
-                        Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.6), size: 18),
+                        Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.6), size: 18),
                       ],
                     ),
                   ),

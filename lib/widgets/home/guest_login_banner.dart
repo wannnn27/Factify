@@ -19,13 +19,13 @@ class GuestLoginBanner extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF4ECDC4).withOpacity(0.2),
-            const Color(0xFF6C5CE7).withOpacity(0.15),
+            const Color(0xFF4ECDC4).withValues(alpha: 0.2),
+            const Color(0xFF6C5CE7).withValues(alpha: 0.15),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF4ECDC4).withOpacity(0.3),
+          color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -40,7 +40,7 @@ class GuestLoginBanner extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF4ECDC4).withOpacity(0.3),
+                  color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -73,7 +73,7 @@ class GuestLoginBanner extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.2),
+                        color: Colors.orange.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Text(

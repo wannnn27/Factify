@@ -136,7 +136,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
             colors: [
               const Color(0xFF0F0F1E),
               const Color(0xFF1A1A2E),
-              const Color(0xFF16213E).withOpacity(0.8),
+              const Color(0xFF16213E).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -156,9 +156,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                       child: Container(
                         margin: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2D2D44).withOpacity(0.8),
+                          color: const Color(0xFF2D2D44).withValues(alpha: 0.8),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white.withOpacity(0.1)),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                         ),
                         child: IconButton(
                           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -177,9 +177,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                         child: Container(
                           margin: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2D2D44).withOpacity(0.8),
+                            color: const Color(0xFF2D2D44).withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                           ),
                           child: IconButton(
                             icon: Icon(
@@ -200,9 +200,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                         child: Container(
                           margin: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2D2D44).withOpacity(0.8),
+                            color: const Color(0xFF2D2D44).withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                           ),
                           child: IconButton(
                             icon: const Icon(Icons.share, color: Colors.white),
@@ -226,7 +226,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                               height: double.infinity,
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
-                                  color: categoryColor.withOpacity(0.4),
+                                  color: categoryColor.withValues(alpha: 0.4),
                                   child: const Center(
                                     child: Icon(Icons.article, color: Colors.white70, size: 80),
                                   ),
@@ -238,7 +238,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
-                                  color: categoryColor.withOpacity(0.4),
+                                  color: categoryColor.withValues(alpha: 0.4),
                                   child: const Center(
                                     child: Icon(Icons.article, color: Colors.white70, size: 80),
                                   ),
@@ -252,8 +252,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              categoryColor.withOpacity(0.7),
-                              categoryColor.withOpacity(0.3),
+                              categoryColor.withValues(alpha: 0.7),
+                              categoryColor.withValues(alpha: 0.3),
                               Colors.transparent,
                             ],
                           ),
@@ -300,9 +300,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 decoration: BoxDecoration(
-                                  color: categoryColor.withOpacity(0.2),
+                                  color: categoryColor.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: categoryColor.withOpacity(0.3)),
+                                  border: Border.all(color: categoryColor.withValues(alpha: 0.3)),
                                 ),
                                 child: Text(
                                   category,
@@ -327,7 +327,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                               Text(
                                 description,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
+                                  color: Colors.white.withValues(alpha: 0.7),
                                   fontSize: 15,
                                   height: 1.5,
                                 ),
@@ -341,7 +341,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                                   gradient: LinearGradient(
                                     colors: [
                                       Colors.transparent,
-                                      categoryColor.withOpacity(0.3),
+                                      categoryColor.withValues(alpha: 0.3),
                                       Colors.transparent,
                                     ],
                                   ),
@@ -351,7 +351,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                               Text(
                                 content,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 16,
                                   height: 1.8,
                                   letterSpacing: 0.3,
@@ -383,12 +383,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2D2D44).withOpacity(0.4),
-            const Color(0xFF2D2D44).withOpacity(0.2),
+            const Color(0xFF2D2D44).withValues(alpha: 0.4),
+            const Color(0xFF2D2D44).withValues(alpha: 0.2),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -434,7 +434,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
         Expanded(
           child: Text(
             text,
-            style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

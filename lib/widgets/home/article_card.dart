@@ -41,18 +41,18 @@ class ArticleCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF2D2D44).withOpacity(0.6),
-                const Color(0xFF2D2D44).withOpacity(0.3),
+                const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                const Color(0xFF2D2D44).withValues(alpha: 0.3),
               ],
             ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: categoryColor.withOpacity(0.1),
+                color: categoryColor.withValues(alpha: 0.1),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -99,7 +99,7 @@ class ArticleCard extends StatelessWidget {
                                     end: Alignment.bottomCenter,
                                     colors: [
                                       Colors.transparent,
-                                      Colors.black.withOpacity(0.3),
+                                      Colors.black.withValues(alpha: 0.3),
                                     ],
                                   ),
                                 ),
@@ -118,7 +118,7 @@ class ArticleCard extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: categoryColor.withOpacity(0.4),
+                                      color: categoryColor.withValues(alpha: 0.4),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -159,7 +159,7 @@ class ArticleCard extends StatelessWidget {
                     Text(
                       article['description'] ?? '',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 13,
                         height: 1.4,
                       ),
@@ -178,7 +178,7 @@ class ArticleCard extends StatelessWidget {
                         Text(
                           article['readTime'] ?? '',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             fontSize: 12,
                           ),
                         ),
@@ -192,7 +192,7 @@ class ArticleCard extends StatelessWidget {
                         Text(
                           article['views'] ?? '',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             fontSize: 12,
                           ),
                         ),
@@ -221,8 +221,8 @@ class ArticleCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            categoryColor.withOpacity(0.3),
-            categoryColor.withOpacity(0.1),
+            categoryColor.withValues(alpha: 0.3),
+            categoryColor.withValues(alpha: 0.1),
           ],
         ),
       ),
@@ -246,7 +246,7 @@ class ArticleCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: categoryColor.withOpacity(0.4),
+                    color: categoryColor.withValues(alpha: 0.4),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -266,7 +266,7 @@ class ArticleCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -290,7 +290,7 @@ class PatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color.withOpacity(0.05)
+      ..color = color.withValues(alpha: 0.05)
       ..style = PaintingStyle.fill;
 
     const spacing = 20.0;

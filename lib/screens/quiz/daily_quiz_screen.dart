@@ -346,12 +346,12 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF4ECDC4).withOpacity(0.15),
-                  const Color(0xFF4ECDC4).withOpacity(0.05),
+                  const Color(0xFF4ECDC4).withValues(alpha: 0.15),
+                  const Color(0xFF4ECDC4).withValues(alpha: 0.05),
                 ],
               ),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: const Color(0xFF4ECDC4).withOpacity(0.3)),
+              border: Border.all(color: const Color(0xFF4ECDC4).withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [
@@ -385,7 +385,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
                 Text(
                   'Kembali besok untuk kuis baru!',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
                   ),
                 ),
@@ -450,23 +450,23 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  accentColor.withOpacity(0.15),
-                  accentColor.withOpacity(0.05),
+                  accentColor.withValues(alpha: 0.15),
+                  accentColor.withValues(alpha: 0.05),
                 ],
               ),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: accentColor.withOpacity(0.3)),
+              border: Border.all(color: accentColor.withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [accentColor, accentColor.withOpacity(0.7)]),
+                    gradient: LinearGradient(colors: [accentColor, accentColor.withValues(alpha: 0.7)]),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: accentColor.withOpacity(0.4),
+                        color: accentColor.withValues(alpha: 0.4),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -551,7 +551,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             fontSize: 14,
           ),
         ),
@@ -583,7 +583,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFF6C5CE7).withOpacity(0.2),
+                color: const Color(0xFF6C5CE7).withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -659,7 +659,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: IconButton(
@@ -681,7 +681,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFD93D).withOpacity(0.2),
+            color: const Color(0xFFFFD93D).withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
@@ -712,7 +712,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
             Text(
               'Soal ${_currentQuestionIndex + 1} dari 5',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 14,
               ),
             ),
@@ -729,7 +729,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: (_currentQuestionIndex + 1) / 5,
-          backgroundColor: Colors.white.withOpacity(0.1),
+          backgroundColor: Colors.white.withValues(alpha: 0.1),
           valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4ECDC4)),
           minHeight: 8,
           borderRadius: BorderRadius.circular(4),
@@ -742,23 +742,23 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
     final isSelected = _selectedAnswer == index;
     final isCorrect = correctIndex == index;
     
-    Color borderColor = Colors.white.withOpacity(0.2);
-    Color bgColor = Colors.white.withOpacity(0.05);
+    Color borderColor = Colors.white.withValues(alpha: 0.2);
+    Color bgColor = Colors.white.withValues(alpha: 0.05);
     IconData? trailingIcon;
     
     if (_hasAnsweredCurrent) {
       if (isCorrect) {
         borderColor = const Color(0xFF4ECDC4);
-        bgColor = const Color(0xFF4ECDC4).withOpacity(0.15);
+        bgColor = const Color(0xFF4ECDC4).withValues(alpha: 0.15);
         trailingIcon = Icons.check_circle;
       } else if (isSelected && !isCorrect) {
         borderColor = const Color(0xFFFF6B6B);
-        bgColor = const Color(0xFFFF6B6B).withOpacity(0.15);
+        bgColor = const Color(0xFFFF6B6B).withValues(alpha: 0.15);
         trailingIcon = Icons.cancel;
       }
     } else if (isSelected) {
       borderColor = const Color(0xFF6C5CE7);
-      bgColor = const Color(0xFF6C5CE7).withOpacity(0.15);
+      bgColor = const Color(0xFF6C5CE7).withValues(alpha: 0.15);
     }
     
     return Padding(
@@ -798,7 +798,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
                 child: Text(
                   text,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 15,
                   ),
                 ),
@@ -818,10 +818,10 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: (isCorrect ? const Color(0xFF4ECDC4) : const Color(0xFFFF6B6B)).withOpacity(0.1),
+        color: (isCorrect ? const Color(0xFF4ECDC4) : const Color(0xFFFF6B6B)).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: (isCorrect ? const Color(0xFF4ECDC4) : const Color(0xFFFF6B6B)).withOpacity(0.3),
+          color: (isCorrect ? const Color(0xFF4ECDC4) : const Color(0xFFFF6B6B)).withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -849,7 +849,7 @@ class _DailyQuizScreenState extends State<DailyQuizScreen> with TickerProviderSt
                 Text(
                   question['explanation'],
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 13,
                     height: 1.4,
                   ),

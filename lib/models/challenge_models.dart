@@ -1,8 +1,8 @@
 /// Enum untuk tingkat kesulitan challenge
 enum ChallengeDifficulty {
-  pemula,     // Level 1 - untuk Pelajar
-  menengah,   // Level 2 - untuk Mahasiswa
-  lanjutan,   // Level 3 - untuk Pekerja/Profesional
+  pemula, // Level 1 - untuk Pelajar
+  menengah, // Level 2 - untuk Mahasiswa
+  lanjutan, // Level 3 - untuk Pekerja/Profesional
 }
 
 extension ChallengeDifficultyExtension on ChallengeDifficulty {
@@ -93,13 +93,36 @@ class ChallengeResult {
   });
 
   factory ChallengeResult.fromJson(Map<String, dynamic> json) {
+    int parseScore(dynamic value) {
+      if (value is int) return value.clamp(0, 100).toInt();
+      if (value is num) return value.round().clamp(0, 100).toInt();
+      if (value is String) {
+        return (num.tryParse(value)?.round() ?? 0).clamp(0, 100).toInt();
+      }
+      return 0;
+    }
+
+    List<String> parseStringList(dynamic value) {
+      if (value is List) {
+        return value.map((item) => item.toString()).toList();
+      }
+      return const [];
+    }
+
+    Map<String, dynamic> parseScores(dynamic value) {
+      if (value is Map) {
+        return Map<String, dynamic>.from(value);
+      }
+      return const {};
+    }
+
     return ChallengeResult(
-      score: json['score'] ?? 0,
-      verdict: json['verdict'] ?? 'Belum dinilai',
-      strengths: List<String>.from(json['strengths'] ?? []),
-      weaknesses: List<String>.from(json['weaknesses'] ?? []),
-      feedback: json['feedback'] ?? '',
-      detailedScores: json['detailed_scores'] ?? {},
+      score: parseScore(json['score']),
+      verdict: json['verdict']?.toString() ?? 'Belum dinilai',
+      strengths: parseStringList(json['strengths']),
+      weaknesses: parseStringList(json['weaknesses']),
+      feedback: json['feedback']?.toString() ?? '',
+      detailedScores: parseScores(json['detailed_scores']),
     );
   }
 }

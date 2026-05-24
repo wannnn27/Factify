@@ -160,6 +160,8 @@ class AuthService {
     String? username,
     String? phone,
     String? photoUrl,
+    String? photoBase64,
+    String? bio,
     UserCategory? userCategory,
   }) async {
     try {
@@ -170,7 +172,10 @@ class AuthService {
       if (username != null) updates['username'] = username;
       if (phone != null) updates['phone'] = phone;
       if (photoUrl != null) updates['photoUrl'] = photoUrl;
+      if (photoBase64 != null) updates['photoBase64'] = photoBase64;
+      if (bio != null) updates['bio'] = bio;
       if (userCategory != null) updates['userCategory'] = userCategory.toFirestoreValue();
+
 
       await _firestore.collection('users').doc(uid).update(updates);
 
@@ -186,26 +191,25 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
+    // Coba sign out dari Google (jika pernah login via Google)
+    // Wrap dalam try-catch terpisah karena bisa error jika Google Sign In
+    // belum pernah diinisialisasi (misalnya user login via email/password)
     try {
-      // Coba sign out dari Google (jika pernah login via Google)
-      // Wrap dalam try-catch terpisah karena bisa error jika Google Sign In
-      // belum pernah diinisialisasi (misalnya user login via email/password)
-      try {
-        await _googleSignIn.signOut();
-      } catch (googleError) {
-        // Abaikan error Google Sign In - mungkin user tidak login via Google
-        print('Google sign out skipped: $googleError');
-      }
-      
-      // Clear user-scoped stats cache before sign out
-      userStats.onUserChanged();
-      
-      // Kemudian sign out dari Firebase
-      await _auth.signOut();
-    } catch (e) {
-      print('Error signing out: $e');
-      rethrow;
+      await _googleSignIn.signOut();
+    } catch (googleError) {
+      // Abaikan error Google Sign In - mungkin user tidak login via Google
+      print('Google sign out skipped: $googleError');
     }
+    
+    // Clear user-scoped stats cache before sign out
+    try {
+      userStats.onUserChanged();
+    } catch (statsError) {
+      print('Stats cache clear skipped: $statsError');
+    }
+    
+    // Kemudian sign out dari Firebase - ini yang paling penting
+    await _auth.signOut();
   }
 
   // Delete account

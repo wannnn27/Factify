@@ -178,6 +178,7 @@ class VerificationEngine:
                     api_key = os.getenv('GEMINI_API_KEY')
                     if api_key:
                         genai.configure(api_key=api_key)
+                        model_name = os.getenv('GEMINI_CHAT_MODEL', 'gemini-1.5-pro')
                         # System prompt persists via system_instruction
                         system_prompt = """
             Kamu adalah "Facti Assistant", asisten virtual cerdas untuk aplikasi Factify.
@@ -206,11 +207,11 @@ class VerificationEngine:
             - Menjawab kasar.
             """
                         self.chat_model = genai.GenerativeModel(
-                            'gemini-1.5-pro',
+                            model_name,
                             system_instruction=system_prompt
                         )
                         self.initialized_analyzers.add("chat")
-                        print("[Engine] Chat model initialized with system instruction")
+                        print(f"[Engine] Chat model initialized with system instruction: {model_name}")
                 except Exception as e:
                     print(f"[Engine] Failed to init chat model: {e}")
         
@@ -356,11 +357,14 @@ class VerificationEngine:
         heuristic = metadata.get('heuristic_deepfake') or {}
         ai = metadata.get('ai_multimodal') or {}
         temporal = metadata.get('temporal_consistency') or {}
+        audio = metadata.get('audio_analysis') or {}
         video_info = metadata.get('video_info') or {}
         is_deepfake = heuristic.get('is_deepfake', False) or ai.get('is_deepfake', False)
         confidence = ai.get('confidence') if ai.get('performed') else heuristic.get('confidence', 0.0)
         confidence = float(confidence) if confidence is not None else 0.0
-        score_0_1 = ai.get('score', 0.5) if ai.get('performed') else (1.0 - confidence)
+        authenticity_score = ai.get('score', 0.5) if ai.get('performed') else (1.0 - confidence)
+        authenticity_score = float(authenticity_score) if authenticity_score is not None else 0.5
+        deepfake_risk = confidence if is_deepfake else max(0.0, min(1.0, 1.0 - authenticity_score))
         t_score = temporal.get('score', 0.8)
         if t_score is not None and hasattr(t_score, '__float__'):
             t_score = float(t_score)
@@ -372,13 +376,14 @@ class VerificationEngine:
                 'is_deepfake': bool(is_deepfake),
                 'confidence': float(confidence) if confidence is not None else 0.0,
             },
-            'deepfake_score': float(score_0_1),
-            'audio_authenticity': 0.6,
+            'deepfake_score': float(deepfake_risk),
+            'audio_authenticity': float(audio.get('score', 0.6) or 0.6),
             'metadata_integrity': 0.75,
             'visual_consistency': 0.7,
             'temporal_consistency': t_score,
             'heuristic_deepfake': _make_json_serializable(heuristic),
             'ai_multimodal': _make_json_serializable(ai),
+            'audio_analysis': _make_json_serializable(audio),
             'temporal_consistency_raw': _make_json_serializable(temporal),
         }
         return out
@@ -462,7 +467,7 @@ class VerificationEngine:
         
         formatted = []
         for finding in findings[:10]:  # Limit to 10 items
-            formatted.append(f"• {finding}")
+            formatted.append(f"- {finding}")
         
         return "\n".join(formatted)
     
@@ -473,7 +478,7 @@ class VerificationEngine:
         
         formatted = []
         for warning in warnings[:10]:  # Limit to 10 items
-            formatted.append(f"• {warning}")
+            formatted.append(f"- {warning}")
         
         return "\n".join(formatted)
     

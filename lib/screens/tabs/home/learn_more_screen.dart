@@ -83,7 +83,7 @@ class LearnMoreScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF4ECDC4).withOpacity(0.2),
+              color: const Color(0xFF4ECDC4).withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: const Color(0xFF4ECDC4)),

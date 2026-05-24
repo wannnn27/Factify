@@ -166,7 +166,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (userCredential != null) {
         // LANGKAH 1: Logout user yang baru dibuat
-        await _authService.signOut();
+        // Gunakan FirebaseAuth langsung, bukan _authService.signOut()
+        // karena signOut() juga mencoba logout Google yang tidak perlu
+        try {
+          await FirebaseAuth.instance.signOut();
+        } catch (signOutError) {
+          // Abaikan error sign out - akun sudah berhasil dibuat
+          debugPrint('Sign out after register skipped: $signOutError');
+        }
         
         if (!mounted) return;
 
@@ -232,9 +239,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } catch (e) {
       if (!mounted) return;
+      
+      // Berikan pesan error yang lebih ramah
+      String errorMessage = e.toString();
+      String friendlyMessage;
+      
+      if (errorMessage.contains('network') || errorMessage.contains('internet')) {
+        friendlyMessage = "Koneksi internet bermasalah. Silakan coba lagi.";
+      } else if (errorMessage.contains('permission') || errorMessage.contains('PERMISSION_DENIED')) {
+        friendlyMessage = "Akses ditolak. Silakan coba lagi nanti.";
+      } else if (errorMessage.contains('timeout')) {
+        friendlyMessage = "Waktu habis. Silakan coba lagi.";
+      } else {
+        friendlyMessage = "Gagal mendaftar. Silakan periksa koneksi internet dan coba lagi.";
+      }
+      
+      debugPrint('Registration error: $e');
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Error: ${e.toString()}"),
+          content: Text(friendlyMessage),
           backgroundColor: const Color(0xFFFF6B6B),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -549,7 +573,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
               decoration: BoxDecoration(
                 color: isSelected 
-                    ? const Color(0xFF00C9A7).withOpacity(0.15)
+                    ? const Color(0xFF00C9A7).withValues(alpha: 0.15)
                     : const Color(0xFF2B3039),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(

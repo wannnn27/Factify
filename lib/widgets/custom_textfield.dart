@@ -102,7 +102,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             boxShadow: _isFocused
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF00C9A7).withOpacity(0.2),
+                      color: const Color(0xFF00C9A7).withValues(alpha: 0.2),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -175,7 +175,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   width: 1,
                 ),
               ),

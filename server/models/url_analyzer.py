@@ -77,8 +77,9 @@ class URLAnalyzer(BaseAnalyzer):
                 try:
                     import google.generativeai as genai
                     genai.configure(api_key=api_key)
-                    self.genai_model = genai.GenerativeModel('gemini-1.5-flash')
-                    print("[URLAnalyzer] Gemini AI initialized for content analysis")
+                    model_name = os.getenv('GEMINI_URL_MODEL', 'gemini-1.5-pro')
+                    self.genai_model = genai.GenerativeModel(model_name)
+                    print(f"[URLAnalyzer] Gemini AI initialized for content analysis: {model_name}")
                 except Exception as e:
                     print(f"[URLAnalyzer] Failed to initialize Gemini: {e}")
                     self.genai_model = None

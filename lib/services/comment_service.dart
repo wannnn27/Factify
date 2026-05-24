@@ -34,9 +34,15 @@ class CommentService {
           .limit(100)
           .get();
 
+      final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
       return snapshot.docs.map((doc) {
         final data = doc.data();
         data['id'] = doc.id;
+        // Compute isLiked per-user from liked_by array
+        final likedBy = List<String>.from(data['liked_by'] ?? []);
+        data['isLiked'] = likedBy.contains(currentUid);
+        data['likes'] = likedBy.isNotEmpty ? likedBy.length : (data['likes'] ?? 0);
         return Comment.fromJson(data);
       }).toList();
     } catch (e) {
@@ -141,15 +147,25 @@ class CommentService {
 
   Future<void> _toggleLikeFirestore(String contentId, String commentId) async {
     try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
       final ref = _commentsRef(contentId).doc(commentId);
       final doc = await ref.get();
       if (doc.exists) {
         final data = doc.data()!;
-        final isLiked = data['isLiked'] ?? false;
-        final likes = data['likes'] ?? 0;
+        final likedBy = List<String>.from(data['liked_by'] ?? []);
+        final uid = currentUser.uid;
+
+        if (likedBy.contains(uid)) {
+          likedBy.remove(uid);
+        } else {
+          likedBy.add(uid);
+        }
+
         await ref.update({
-          'isLiked': !isLiked,
-          'likes': isLiked ? likes - 1 : likes + 1,
+          'liked_by': likedBy,
+          'likes': likedBy.length,
         });
       }
     } catch (e) {
@@ -191,11 +207,19 @@ class CommentService {
         .orderBy('timestamp', descending: true)
         .limit(100)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              final data = doc.data();
-              data['id'] = doc.id;
-              return Comment.fromJson(data);
-            }).toList());
+        .map((snapshot) {
+          final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id;
+            
+            final likedBy = List<String>.from(data['liked_by'] ?? []);
+            data['isLiked'] = likedBy.contains(currentUid);
+            data['likes'] = likedBy.isNotEmpty ? likedBy.length : (data['likes'] ?? 0);
+            
+            return Comment.fromJson(data);
+          }).toList();
+        });
   }
 
   // ============ LOCAL HELPERS ============

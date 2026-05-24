@@ -126,12 +126,12 @@ class _GuestProfileScreenState extends State<GuestProfileScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.grey[800]!.withOpacity(0.3),
-            Colors.grey[900]!.withOpacity(0.2),
+            Colors.grey[800]!.withValues(alpha: 0.3),
+            Colors.grey[900]!.withValues(alpha: 0.2),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.grey[700]!.withOpacity(0.3)),
+        border: Border.all(color: Colors.grey[700]!.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -150,7 +150,7 @@ class _GuestProfileScreenState extends State<GuestProfileScreen>
               border: Border.all(color: Colors.grey[600]!, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 15,
                   spreadRadius: 2,
                 ),
@@ -171,7 +171,7 @@ class _GuestProfileScreenState extends State<GuestProfileScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.grey[700]!.withOpacity(0.3),
+              color: Colors.grey[700]!.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -301,7 +301,7 @@ class _GuestProfileScreenState extends State<GuestProfileScreen>
         color: const Color(0xFF2D2D44),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isLocked ? Colors.grey[700]! : color.withOpacity(0.3),
+          color: isLocked ? Colors.grey[700]! : color.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -310,8 +310,8 @@ class _GuestProfileScreenState extends State<GuestProfileScreen>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isLocked 
-                  ? Colors.grey[700]!.withOpacity(0.3)
-                  : color.withOpacity(0.2),
+                  ? Colors.grey[700]!.withValues(alpha: 0.3)
+                  : color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Stack(
@@ -379,13 +379,13 @@ class _GuestProfileScreenState extends State<GuestProfileScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF4ECDC4).withOpacity(0.15),
-            const Color(0xFF6C5CE7).withOpacity(0.1),
+            const Color(0xFF4ECDC4).withValues(alpha: 0.15),
+            const Color(0xFF6C5CE7).withValues(alpha: 0.1),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFF4ECDC4).withOpacity(0.3),
+          color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -395,7 +395,7 @@ class _GuestProfileScreenState extends State<GuestProfileScreen>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4ECDC4).withOpacity(0.2),
+                  color: const Color(0xFF4ECDC4).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(

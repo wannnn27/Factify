@@ -1,10 +1,8 @@
 import 'dart:async';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
-import 'dart:ui_web' as ui_web; // For platform view registry
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import '../discussion/discussion_section.dart';
+import 'youtube_embed.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final Map<String, dynamic> video;
@@ -25,7 +23,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   void initState() {
     super.initState();
     final url = widget.video['videoUrl'] as String;
-    
+
     // Determine if YouTube or Local Asset
     if (url.contains('http') || url.contains('youtu')) {
       _isYouTube = true;
@@ -35,24 +33,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       _initializeAsset(url);
     }
   }
-  
+
   void _initializeYouTube(String url) {
     // Generate unique ID for this video player instance
     final videoId = _extractVideoId(url);
     _viewId = 'youtube-player-${DateTime.now().millisecondsSinceEpoch}';
-    
-    // Register the iframe factory
-    // This creates a pure HTML iframe element, bypassing Flutter's complex rendering
-    ui_web.platformViewRegistry.registerViewFactory(_viewId, (int viewId) {
-      final iframe = html.IFrameElement()
-        ..src = 'https://www.youtube.com/embed/$videoId?autoplay=1&mute=0&playsinline=1&controls=1&rel=0'
-        ..style.border = 'none'
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
-      
-      return iframe;
-    });
+    registerYouTubeIframe(_viewId, videoId);
   }
 
   Future<void> _initializeAsset(String path) async {
@@ -78,7 +64,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     final uri = Uri.tryParse(url);
     if (uri == null) return null;
     if (uri.queryParameters.containsKey('v')) return uri.queryParameters['v'];
-    if (uri.host.contains('youtu.be')) return uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+    if (uri.host.contains('youtu.be'))
+      return uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
     return null;
   }
 
@@ -100,7 +87,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),
@@ -132,14 +120,15 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               color: Colors.black,
               width: double.infinity,
               constraints: BoxConstraints(
-                maxHeight: isLandscape ? screenHeight * 0.8 : screenHeight * 0.6,
+                maxHeight:
+                    isLandscape ? screenHeight * 0.8 : screenHeight * 0.6,
               ),
               child: Center(
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
                   child: _isPlaying
                       ? (_isYouTube
-                          ? HtmlElementView(viewType: _viewId)
+                          ? buildYouTubeView(_viewId)
                           : (_isAssetInitialized
                               ? Stack(
                                   alignment: Alignment.bottomCenter,
@@ -151,7 +140,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                                       colors: const VideoProgressColors(
                                           playedColor: Color(0xFF4ECDC4)),
                                     ),
-                                    _ControlsOverlay(controller: _assetController!),
+                                    _ControlsOverlay(
+                                        controller: _assetController!),
                                   ],
                                 )
                               : const Center(
@@ -181,7 +171,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                                       color: Color(0xFF4ECDC4)),
                                   onPressed: () {
                                     setState(() => _isPlaying = true);
-                                    if (!_isYouTube && _assetController != null) {
+                                    if (!_isYouTube &&
+                                        _assetController != null) {
                                       _assetController!.play();
                                     }
                                   },
@@ -257,7 +248,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                     ),
                   ),
                   // Extra padding for bottom spacing
-                   const SizedBox(height: 40),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -266,7 +257,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       ),
     );
   }
-
 
   Widget _buildInfoChip({
     required IconData icon,

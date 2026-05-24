@@ -16,7 +16,7 @@ class ChallengeScreen extends StatefulWidget {
 class _ChallengeScreenState extends State<ChallengeScreen> {
   // Selected categories
   Set<String> selectedCategories = {};
-  
+
   // User category from Firestore
   UserCategory _userCategory = UserCategory.pelajar; // Default
   bool _isLoadingCategory = true;
@@ -34,7 +34,9 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
         final userData = await AuthService().getUserData(user.uid);
         if (userData != null && userData['userCategory'] != null) {
           setState(() {
-            _userCategory = UserCategoryExtension.fromFirestoreValue(userData['userCategory']);
+            _userCategory = UserCategoryExtension.fromFirestoreValue(
+              userData['userCategory'],
+            );
             _isLoadingCategory = false;
           });
           return;
@@ -53,19 +55,22 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       'id': 'teknologi',
       'title': 'Teknologi',
       'icon': Icons.computer,
-      'description': 'Hoaks seputar AI, gadget, keamanan digital, dan teknologi terbaru.',
+      'description':
+          'Hoaks seputar AI, gadget, keamanan digital, dan teknologi terbaru.',
     },
     {
       'id': 'pendidikan',
       'title': 'Pendidikan',
       'icon': Icons.school,
-      'description': 'Isu fakta dan misinformasi di dunia sekolah, kampus, dan beasiswa.',
+      'description':
+          'Isu fakta dan misinformasi di dunia sekolah, kampus, dan beasiswa.',
     },
     {
       'id': 'sosial',
       'title': 'Sosial',
       'icon': Icons.people,
-      'description': 'Rumor, berita viral, dan isu sosial yang sering disalahpahami.',
+      'description':
+          'Rumor, berita viral, dan isu sosial yang sering disalahpahami.',
     },
     {
       'id': 'ekonomi',
@@ -77,13 +82,15 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       'id': 'kesehatan',
       'title': 'Kesehatan',
       'icon': Icons.local_hospital,
-      'description': 'Mitos kesehatan, obat ajaib, dan informasi medis yang salah.',
+      'description':
+          'Mitos kesehatan, obat ajaib, dan informasi medis yang salah.',
     },
     {
       'id': 'politik',
       'title': 'Politik',
       'icon': Icons.policy,
-      'description': 'Disinformasi pemilu, kebijakan publik, dan tokoh politik.',
+      'description':
+          'Disinformasi pemilu, kebijakan publik, dan tokoh politik.',
     },
   ];
 
@@ -96,7 +103,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           children: [
             // HEADER
             _buildHeader(),
-            
+
             // CONTENT
             Expanded(
               child: SingleChildScrollView(
@@ -114,12 +121,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // CATEGORY GRID
                     _buildCategoryGrid(),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // START BUTTON
                     SizedBox(
                       width: double.infinity,
@@ -197,10 +204,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           const SizedBox(height: 8),
           Text(
             "Uji kemampuanmu dalam membedakan fakta dengan hoaks sekarang! AI akan menilai ketajaman analisis kamu.",
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.grey[400], fontSize: 13),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
@@ -231,7 +235,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     Color badgeColor;
     String levelText;
     IconData levelIcon;
-    
+
     switch (_userCategory) {
       case UserCategory.pelajar:
         badgeColor = const Color(0xFF4CAF50);
@@ -253,7 +257,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.15),
+        color: badgeColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: badgeColor, width: 1),
       ),
@@ -273,16 +277,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           const SizedBox(width: 4),
           Text(
             '(${_userCategory.displayName})',
-            style: TextStyle(
-              color: badgeColor.withOpacity(0.8),
-              fontSize: 11,
-            ),
+            style: TextStyle(color: badgeColor.withValues(alpha: 0.8), fontSize: 11),
           ),
         ],
       ),
     );
   }
-
 
   Widget _buildCategoryGrid() {
     return GridView.builder(
@@ -298,7 +298,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       itemBuilder: (context, index) {
         final category = categories[index];
         final isSelected = selectedCategories.contains(category['id']);
-        
+
         return GestureDetector(
           onTap: () {
             setState(() {
@@ -429,7 +429,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
           children: [
             // HEADER
             _buildHeader(),
-            
+
             // CONTENT
             Expanded(
               child: SingleChildScrollView(
@@ -458,9 +458,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         },
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // TAGS
                     Wrap(
                       spacing: 8,
@@ -470,29 +470,33 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         _buildTag("Challenge"),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // LATAR BELAKANG
                     _buildExpandableSection(
                       title: "Latar Belakang / Konteks",
                       isExpanded: _latarBelakangExpanded,
-                      onToggle: () => setState(() => _latarBelakangExpanded = !_latarBelakangExpanded),
+                      onToggle: () => setState(
+                        () => _latarBelakangExpanded = !_latarBelakangExpanded,
+                      ),
                       content: widget.challengeCase.background,
                     ),
-                    
+
                     const SizedBox(height: 12),
-                    
+
                     // POKOK MASALAH
                     _buildExpandableSection(
                       title: "Pertanyaan / Tugas",
                       isExpanded: _pokoMasalahExpanded,
-                      onToggle: () => setState(() => _pokoMasalahExpanded = !_pokoMasalahExpanded),
+                      onToggle: () => setState(
+                        () => _pokoMasalahExpanded = !_pokoMasalahExpanded,
+                      ),
                       content: widget.challengeCase.problem,
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // INPUT FORM
                     const Text(
                       "Jawaban & Analisis Kamu",
@@ -511,17 +515,21 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         height: 1.5,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // ANALYSIS INPUT
                     TextField(
                       controller: _analysisController,
                       maxLines: 6,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: "Tuliskan analisismu secara lengkap di sini...",
-                        hintStyle: TextStyle(color: Colors.grey[600], fontSize: 13),
+                        hintText:
+                            "Tuliskan analisismu secara lengkap di sini...",
+                        hintStyle: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 13,
+                        ),
                         filled: true,
                         fillColor: const Color(0xFF2B3039),
                         border: OutlineInputBorder(
@@ -531,16 +539,19 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         contentPadding: const EdgeInsets.all(16),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 12),
-                    
+
                     // SOURCE INPUT
                     TextField(
                       controller: _sourceController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: "Link Referensi / Sumber (Opsional)",
-                        hintStyle: TextStyle(color: Colors.grey[600], fontSize: 13),
+                        hintStyle: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 13,
+                        ),
                         filled: true,
                         fillColor: const Color(0xFF2B3039),
                         border: OutlineInputBorder(
@@ -550,14 +561,16 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                         contentPadding: const EdgeInsets.all(16),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // SUBMIT BUTTON
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _isSubmitting ? null : () => _submitAnswer(context),
+                        onPressed: _isSubmitting
+                            ? null
+                            : () => _submitAnswer(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF00C9A7),
                           disabledBackgroundColor: const Color(0xFF2B3039),
@@ -567,20 +580,23 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                           ),
                           elevation: 0,
                         ),
-                        child: _isSubmitting 
-                          ? const SizedBox(
-                              width: 24, 
-                              height: 24, 
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
-                            )
-                          : const Text(
-                              "Kirim Jawaban",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                "Kirim Jawaban",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
                       ),
                     ),
                   ],
@@ -643,7 +659,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
   Widget _buildDifficultyTag(ChallengeDifficulty difficulty) {
     Color bgColor;
     String label;
-    
+
     switch (difficulty) {
       case ChallengeDifficulty.pemula:
         bgColor = const Color(0xFF4CAF50); // Green
@@ -658,7 +674,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
         label = '🎯 Lanjutan';
         break;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -707,7 +723,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                   ),
                 ),
                 Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                   color: Colors.white,
                 ),
               ],
@@ -756,9 +774,9 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal menilai jawaban: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal menilai jawaban: $e")));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -769,10 +787,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
 class ChallengeResultScreen extends StatefulWidget {
   final ChallengeResult result;
 
-  const ChallengeResultScreen({
-    super.key,
-    required this.result,
-  });
+  const ChallengeResultScreen({super.key, required this.result});
 
   @override
   State<ChallengeResultScreen> createState() => _ChallengeResultScreenState();
@@ -782,16 +797,16 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
   String selectedTab = 'ringkasan'; // ringkasan or rincian
   bool _kekuatanExpanded = true;
   bool _feedbackExpanded = true;
-  
+
   // Note: Tab controller logic simplified for brevity
-  
+
   @override
   void initState() {
     super.initState();
     // Track challenge completion
     _trackChallengeCompletion();
   }
-  
+
   Future<void> _trackChallengeCompletion() async {
     final score = widget.result.score;
     await userStats.completedChallenge(score);
@@ -806,7 +821,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
           children: [
             // HEADER
             _buildHeader(),
-            
+
             // CONTENT
             Expanded(
               child: SingleChildScrollView(
@@ -815,14 +830,14 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
                   children: [
                     // SCORE CIRCLE
                     _buildScoreCircle(),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // TABS
                     _buildTabs(),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // TAB CONTENT
                     if (selectedTab == 'ringkasan') ...[
                       _buildRingkasanContent(),
@@ -891,13 +906,13 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
-          colors: [scoreColor, scoreColor.withOpacity(0.7)],
+          colors: [scoreColor, scoreColor.withValues(alpha: 0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: scoreColor.withOpacity(0.3),
+            color: scoreColor.withValues(alpha: 0.3),
             blurRadius: 20,
             spreadRadius: 5,
           ),
@@ -918,7 +933,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
             Text(
               "/100",
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 fontSize: 16,
               ),
             ),
@@ -1013,12 +1028,13 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
             icon: Icons.check_circle_outline,
             items: widget.result.strengths,
             isExpanded: _kekuatanExpanded,
-            onToggle: () => setState(() => _kekuatanExpanded = !_kekuatanExpanded),
+            onToggle: () =>
+                setState(() => _kekuatanExpanded = !_kekuatanExpanded),
             color: const Color(0xFF00C9A7),
           ),
-        
+
         const SizedBox(height: 12),
-        
+
         if (widget.result.weaknesses.isNotEmpty)
           _buildExpandableList(
             title: "Perlu Ditingkatkan",
@@ -1036,7 +1052,8 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
           icon: Icons.school,
           content: widget.result.feedback,
           isExpanded: _feedbackExpanded,
-          onToggle: () => setState(() => _feedbackExpanded = !_feedbackExpanded),
+          onToggle: () =>
+              setState(() => _feedbackExpanded = !_feedbackExpanded),
         ),
       ],
     );
@@ -1047,11 +1064,13 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSkillBar("Logika & Penalaran", scores['logic'] ?? 0),
+        _buildSkillBar("Ketepatan Fakta", scores['accuracy'] ?? 0, 40),
         const SizedBox(height: 16),
-        _buildSkillBar("Bukti & Fakta", scores['evidence'] ?? 0),
+        _buildSkillBar("Logika & Penalaran", scores['logic'] ?? 0, 30),
         const SizedBox(height: 16),
-        _buildSkillBar("Kejelasan Argumen", scores['clarity'] ?? 0),
+        _buildSkillBar("Kualitas Sumber", scores['evidence'] ?? 0, 20),
+        const SizedBox(height: 16),
+        _buildSkillBar("Sikap Objektif", scores['attitude'] ?? 0, 10),
       ],
     );
   }
@@ -1088,7 +1107,9 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
                 ),
                 const Spacer(),
                 Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                   color: Colors.white,
                 ),
               ],
@@ -1110,7 +1131,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
     );
   }
 
-    Widget _buildExpandableList({
+  Widget _buildExpandableList({
     required String title,
     required IconData icon,
     required List<String> items,
@@ -1125,7 +1146,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF2B3039),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3), width: 1),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1144,32 +1165,36 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
                 ),
                 const Spacer(),
                 Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                   color: Colors.white,
                 ),
               ],
             ),
             if (isExpanded) ...[
               const SizedBox(height: 12),
-              ...items.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("• ", style: TextStyle(color: color)),
-                    Expanded(
-                      child: Text(
-                        item,
-                        style: TextStyle(
-                          color: Colors.grey[300],
-                          fontSize: 13,
-                          height: 1.4,
+              ...items.map(
+                (item) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("- ", style: TextStyle(color: color)),
+                      Expanded(
+                        child: Text(
+                          item,
+                          style: TextStyle(
+                            color: Colors.grey[300],
+                            fontSize: 13,
+                            height: 1.4,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              )),
+              ),
             ],
           ],
         ),
@@ -1177,7 +1202,12 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
     );
   }
 
-  Widget _buildSkillBar(String label, num value) {
+  Widget _buildSkillBar(String label, dynamic rawValue, num maxScore) {
+    final value = rawValue is num
+        ? rawValue
+        : num.tryParse(rawValue.toString()) ?? 0;
+    final progress = (value / maxScore).clamp(0.0, 1.0).toDouble();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1193,7 +1223,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
               ),
             ),
             Text(
-              "$value/100",
+              "${value.toStringAsFixed(0)}/${maxScore.toStringAsFixed(0)}",
               style: const TextStyle(
                 color: Color(0xFF00C9A7),
                 fontSize: 14,
@@ -1206,7 +1236,7 @@ class _ChallengeResultScreenState extends State<ChallengeResultScreen> {
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value: value / 100,
+            value: progress,
             backgroundColor: const Color(0xFF1E232C),
             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00C9A7)),
             minHeight: 8,

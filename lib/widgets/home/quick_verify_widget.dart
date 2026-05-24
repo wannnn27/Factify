@@ -71,13 +71,13 @@ class _QuickVerifyWidgetState extends State<QuickVerifyWidget> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF4ECDC4).withOpacity(0.12),
-            const Color(0xFF44A08D).withOpacity(0.06),
+            const Color(0xFF4ECDC4).withValues(alpha: 0.12),
+            const Color(0xFF44A08D).withValues(alpha: 0.06),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xFF4ECDC4).withOpacity(0.3),
+          color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -113,7 +113,7 @@ class _QuickVerifyWidgetState extends State<QuickVerifyWidget> {
                       Text(
                         'Cek kebenaran informasi dengan AI',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                           fontSize: 12,
                         ),
                       ),
@@ -126,12 +126,12 @@ class _QuickVerifyWidgetState extends State<QuickVerifyWidget> {
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.keyboard_arrow_down,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       size: 20,
                     ),
                   ),
@@ -164,13 +164,13 @@ class _QuickVerifyWidgetState extends State<QuickVerifyWidget> {
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
                             color: isSelected 
-                                ? const Color(0xFF4ECDC4).withOpacity(0.2)
-                                : Colors.white.withOpacity(0.05),
+                                ? const Color(0xFF4ECDC4).withValues(alpha: 0.2)
+                                : Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected 
                                   ? const Color(0xFF4ECDC4)
-                                  : Colors.white.withOpacity(0.1),
+                                  : Colors.white.withValues(alpha: 0.1),
                               width: isSelected ? 2 : 1,
                             ),
                           ),
@@ -181,7 +181,7 @@ class _QuickVerifyWidgetState extends State<QuickVerifyWidget> {
                                 type['icon'],
                                 color: isSelected 
                                     ? const Color(0xFF4ECDC4)
-                                    : Colors.white.withOpacity(0.6),
+                                    : Colors.white.withValues(alpha: 0.6),
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
@@ -190,7 +190,7 @@ class _QuickVerifyWidgetState extends State<QuickVerifyWidget> {
                                 style: TextStyle(
                                   color: isSelected 
                                       ? const Color(0xFF4ECDC4)
-                                      : Colors.white.withOpacity(0.6),
+                                      : Colors.white.withValues(alpha: 0.6),
                                   fontSize: 13,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                 ),
@@ -207,10 +207,10 @@ class _QuickVerifyWidgetState extends State<QuickVerifyWidget> {
                 
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                     ),
                   ),
                   child: TextField(
@@ -223,7 +223,7 @@ class _QuickVerifyWidgetState extends State<QuickVerifyWidget> {
                           ? 'Tempel teks yang ingin diverifikasi...'
                           : 'Masukkan URL artikel atau berita...',
                       hintStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.4),
+                        color: Colors.white.withValues(alpha: 0.4),
                         fontSize: 14,
                       ),
                       border: InputBorder.none,

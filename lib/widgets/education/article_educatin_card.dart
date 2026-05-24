@@ -74,7 +74,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: widget.article['color'].withOpacity(0.2),
+                color: widget.article['color'].withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -118,7 +118,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4ECDC4).withOpacity(0.2),
+                    color: const Color(0xFF4ECDC4).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -149,10 +149,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: widget.article['color'].withOpacity(0.1),
+                  color: widget.article['color'].withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: widget.article['color'].withOpacity(0.3),
+                    color: widget.article['color'].withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),

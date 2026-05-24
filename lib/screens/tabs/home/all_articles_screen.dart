@@ -102,7 +102,7 @@ class _AllArticlesScreenState extends State<AllArticlesScreen>
             colors: [
               const Color(0xFF0F0F1E),
               const Color(0xFF1A1A2E),
-              const Color(0xFF16213E).withOpacity(0.8),
+              const Color(0xFF16213E).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -166,10 +166,10 @@ class _AllArticlesScreenState extends State<AllArticlesScreen>
         children: [
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF2D2D44).withOpacity(0.6),
+              color: const Color(0xFF2D2D44).withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
               ),
             ),
             child: IconButton(
@@ -193,7 +193,7 @@ class _AllArticlesScreenState extends State<AllArticlesScreen>
                 Text(
                   '${_filteredArticles.length} artikel tersedia',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 13,
                   ),
                 ),
@@ -241,24 +241,24 @@ class _AllArticlesScreenState extends State<AllArticlesScreen>
                         ? LinearGradient(
                             colors: [
                               categoryColor,
-                              categoryColor.withOpacity(0.8),
+                              categoryColor.withValues(alpha: 0.8),
                             ],
                           )
                         : null,
                     color: isSelected
                         ? null
-                        : const Color(0xFF2D2D44).withOpacity(0.3),
+                        : const Color(0xFF2D2D44).withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(25),
                     border: Border.all(
                       color: isSelected
                           ? categoryColor
-                          : Colors.white.withOpacity(0.1),
+                          : Colors.white.withValues(alpha: 0.1),
                       width: isSelected ? 2 : 1,
                     ),
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: categoryColor.withOpacity(0.3),
+                              color: categoryColor.withValues(alpha: 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -270,7 +270,7 @@ class _AllArticlesScreenState extends State<AllArticlesScreen>
                     style: TextStyle(
                       color: isSelected
                           ? Colors.white
-                          : Colors.white.withOpacity(0.6),
+                          : Colors.white.withValues(alpha: 0.6),
                       fontSize: 13,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                     ),
@@ -293,13 +293,13 @@ class _AllArticlesScreenState extends State<AllArticlesScreen>
             Icon(
               Icons.article_outlined,
               size: 64,
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
               'Tidak ada artikel',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 16,
               ),
             ),
@@ -307,7 +307,7 @@ class _AllArticlesScreenState extends State<AllArticlesScreen>
             Text(
               'Coba pilih kategori lain',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 fontSize: 13,
               ),
             ),

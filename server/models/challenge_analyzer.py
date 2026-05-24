@@ -32,9 +32,10 @@ class ChallengeAnalyzer(BaseAnalyzer):
                 return False
                 
             genai.configure(api_key=api_key)
-            self.genai_model = genai.GenerativeModel('gemini-1.5-pro')
+            model_name = os.getenv('GEMINI_CHALLENGE_MODEL', 'gemini-1.5-pro')
+            self.genai_model = genai.GenerativeModel(model_name)
             self.is_initialized = True
-            print("[ChallengeAnalyzer] Gemini initialized")
+            print(f"[ChallengeAnalyzer] Gemini initialized: {model_name}")
             return True
         except Exception as e:
             print(f"[ChallengeAnalyzer] Init failed: {e}")

@@ -87,7 +87,7 @@ class _EducationScreenState extends State<EducationScreen> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF4ECDC4).withOpacity(0.2),
+                            color: const Color(0xFF4ECDC4).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(

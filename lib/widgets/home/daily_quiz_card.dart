@@ -60,13 +60,13 @@ class _DailyQuizCardState extends State<DailyQuizCard> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFF6C5CE7).withOpacity(0.15),
-              const Color(0xFFA29BFE).withOpacity(0.08),
+              const Color(0xFF6C5CE7).withValues(alpha: 0.15),
+              const Color(0xFFA29BFE).withValues(alpha: 0.08),
             ],
           ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: const Color(0xFF6C5CE7).withOpacity(0.3),
+            color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -82,7 +82,7 @@ class _DailyQuizCardState extends State<DailyQuizCard> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF6C5CE7).withOpacity(0.3),
+                    color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -136,7 +136,7 @@ class _DailyQuizCardState extends State<DailyQuizCard> {
                         ? 'Skor hari ini: $_todayScore/5 • Kembali besok!'
                         : '5 pertanyaan literasi digital • +50 XP',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 13,
                     ),
                   ),
@@ -149,7 +149,7 @@ class _DailyQuizCardState extends State<DailyQuizCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFD93D).withOpacity(0.2),
+                  color: const Color(0xFFFFD93D).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Row(
@@ -171,12 +171,12 @@ class _DailyQuizCardState extends State<DailyQuizCard> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   size: 16,
                 ),
               ),

@@ -5,6 +5,7 @@ import os
 import io
 import base64
 import tempfile
+import re
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -32,8 +33,8 @@ app = Flask(__name__)
 
 # CORS - restrict to known origins
 CORS(app, origins=[
-    "http://localhost:*",
-    "http://127.0.0.1:*",
+    re.compile(r"^http://localhost(:\d+)?$"),
+    re.compile(r"^http://127\.0\.0\.1(:\d+)?$"),
     "https://arwnsyh-factify-models.hf.space",
 ])
 
@@ -66,6 +67,24 @@ engine = VerificationEngine(lazy_load=True)
 def allowed_file(filename: str, allowed_extensions: set) -> bool:
     """Check if file extension is allowed"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+
+def save_upload_to_temp(file, allowed_extensions: set) -> str:
+    """Save an uploaded file to a unique temp path and return that path."""
+    filename = secure_filename(file.filename or "")
+    if not filename:
+        raise ValueError("No file selected")
+    if not allowed_file(filename, allowed_extensions):
+        raise ValueError("Invalid file type")
+
+    suffix = os.path.splitext(filename)[1].lower()
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=suffix,
+        dir=app.config['UPLOAD_FOLDER'],
+    ) as temp_file:
+        file.save(temp_file)
+        return temp_file.name
 
 
 @app.route('/health', methods=['GET'])
@@ -220,17 +239,10 @@ def verify_video():
         # Check for file upload
         if 'video' in request.files:
             file = request.files['video']
-            
-            if file.filename == '':
-                return jsonify({'error': 'No file selected'}), 400
-            
-            if not allowed_file(file.filename, ALLOWED_VIDEO_EXTENSIONS):
-                return jsonify({'error': 'Invalid file type'}), 400
-            
-            # Save to temp file
-            filename = secure_filename(file.filename)
-            temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(temp_path)
+            try:
+                temp_path = save_upload_to_temp(file, ALLOWED_VIDEO_EXTENSIONS)
+            except ValueError as e:
+                return jsonify({'error': str(e)}), 400
             
             try:
                 result = engine.verify_video(temp_path)
@@ -244,6 +256,8 @@ def verify_video():
             data = request.get_json()
             
             if 'video_url' in data:
+                if not data['video_url'] or not str(data['video_url']).strip():
+                    return jsonify({'error': 'Video URL cannot be empty'}), 400
                 result = engine.verify_video(data['video_url'])
             else:
                 return jsonify({'error': 'No video provided'}), 400
@@ -368,6 +382,7 @@ def verify_auto():
             elif 'content_url' in data:
                 import requests
                 response = requests.get(data['content_url'], timeout=30)
+                response.raise_for_status()
                 image_bytes = response.content
                 result = engine.verify_image(image_bytes)
             else:

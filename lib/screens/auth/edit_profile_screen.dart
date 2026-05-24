@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/user_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/auth_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -78,6 +80,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
 
       await UserService.saveUserProfile(newProfile);
+
+      // Sync to Firestore if authenticated
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        try {
+          final authService = AuthService();
+          await authService.updateUserProfile(
+            uid: currentUser.uid,
+            username: newProfile.name,
+            phone: newProfile.phone,
+            bio: newProfile.bio,
+            photoBase64: newProfile.photoBase64,
+          );
+        } catch (e) {
+          debugPrint('Failed to sync profile to Firestore: $e');
+        }
+      }
 
       if (!mounted) return;
       setState(() => _isLoading = false);

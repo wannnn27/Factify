@@ -54,12 +54,12 @@ class LoginRequiredDialog extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: iconColor.withOpacity(0.3),
+            color: iconColor.withValues(alpha: 0.3),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: iconColor.withOpacity(0.2),
+              color: iconColor.withValues(alpha: 0.2),
               blurRadius: 20,
               spreadRadius: 2,
             ),
@@ -74,14 +74,14 @@ class LoginRequiredDialog extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    iconColor.withOpacity(0.3),
-                    iconColor.withOpacity(0.1),
+                    iconColor.withValues(alpha: 0.3),
+                    iconColor.withValues(alpha: 0.1),
                   ],
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: iconColor.withOpacity(0.3),
+                    color: iconColor.withValues(alpha: 0.3),
                     blurRadius: 16,
                     spreadRadius: 2,
                   ),
@@ -112,7 +112,7 @@ class LoginRequiredDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.2),
+                color: iconColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -144,7 +144,7 @@ class LoginRequiredDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -254,7 +254,7 @@ class LoginRequiredDialog extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 16),

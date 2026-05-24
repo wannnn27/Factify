@@ -111,7 +111,7 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
             end: Alignment.bottomCenter,
             colors: [
               const Color(0xFF1A1A2E),
-              const Color(0xFF16213E).withOpacity(0.95),
+              const Color(0xFF16213E).withValues(alpha: 0.95),
             ],
           ),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -169,13 +169,13 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              const Color(0xFF2D2D44).withOpacity(0.6),
-                              const Color(0xFF2D2D44).withOpacity(0.3),
+                              const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                              const Color(0xFF2D2D44).withValues(alpha: 0.3),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
                         ),
                         child: Row(
@@ -223,13 +223,13 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                 colors: [
                   const Color(0xFF0F0F1E),
                   const Color(0xFF1A1A2E),
-                  const Color(0xFF16213E).withOpacity(0.9),
+                  const Color(0xFF16213E).withValues(alpha: 0.9),
                 ],
               ),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF4ECDC4).withOpacity(0.1),
+                  color: const Color(0xFF4ECDC4).withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, -5),
                 ),
@@ -265,14 +265,14 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2D2D44).withOpacity(0.5),
-            const Color(0xFF2D2D44).withOpacity(0.3),
+            const Color(0xFF2D2D44).withValues(alpha: 0.5),
+            const Color(0xFF2D2D44).withValues(alpha: 0.3),
           ],
         ),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         border: Border(
           bottom: BorderSide(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -283,7 +283,7 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -300,7 +300,7 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6C5CE7).withOpacity(0.3),
+                      color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -351,7 +351,7 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(Icons.close, color: Colors.white, size: 20),
@@ -378,7 +378,7 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF6C5CE7).withOpacity(0.3),
+                  color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -394,12 +394,12 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
           const SizedBox(height: 24),
           Text(
             'Mulai Percakapan',
-            style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
             'Tanyakan apa saja tentang literasi digital',
-            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
           ),
         ],
       ),
@@ -412,12 +412,12 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2D2D44).withOpacity(0.5),
-            const Color(0xFF2D2D44).withOpacity(0.3),
+            const Color(0xFF2D2D44).withValues(alpha: 0.5),
+            const Color(0xFF2D2D44).withValues(alpha: 0.3),
           ],
         ),
         border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 1),
         ),
       ),
       child: SafeArea(
@@ -436,12 +436,12 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF6C5CE7).withOpacity(0.3),
-                            const Color(0xFF6C5CE7).withOpacity(0.2),
+                            const Color(0xFF6C5CE7).withValues(alpha: 0.3),
+                            const Color(0xFF6C5CE7).withValues(alpha: 0.2),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF6C5CE7).withOpacity(0.3)),
+                        border: Border.all(color: const Color(0xFF6C5CE7).withValues(alpha: 0.3)),
                       ),
                       child: const Icon(Icons.question_answer, color: Color(0xFF6C5CE7), size: 20),
                     ),
@@ -451,9 +451,9 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     child: Row(
                       children: [
@@ -463,7 +463,7 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                             style: const TextStyle(color: Colors.white, fontSize: 14),
                             decoration: InputDecoration(
                               hintText: 'Ketik pesan...',
-                              hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
+                              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 14),
                               border: InputBorder.none,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                             ),
@@ -487,14 +487,14 @@ class _ChatbotBottomSheetState extends State<ChatbotBottomSheet>
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         gradient: _isTyping
-                            ? LinearGradient(colors: [Colors.grey.withOpacity(0.3), Colors.grey.withOpacity(0.2)])
+                            ? LinearGradient(colors: [Colors.grey.withValues(alpha: 0.3), Colors.grey.withValues(alpha: 0.2)])
                             : const LinearGradient(colors: [Color(0xFF4ECDC4), Color(0xFF44A08D)]),
                         shape: BoxShape.circle,
                         boxShadow: _isTyping
                             ? []
                             : [
                                 BoxShadow(
-                                  color: const Color(0xFF4ECDC4).withOpacity(0.3),
+                                  color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),

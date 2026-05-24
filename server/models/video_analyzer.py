@@ -6,6 +6,7 @@ import io
 import time
 import tempfile
 import os
+from urllib.parse import urlparse
 from typing import Any, Dict, List, Tuple, Optional
 from pathlib import Path
 
@@ -35,6 +36,7 @@ class VideoAnalyzer(BaseAnalyzer):
         self.face_detector = None
         self.frame_sample_rate = 30  # Sample every N frames
         self.max_frames = 50  # Maximum frames to analyze
+        self.max_download_size = 50 * 1024 * 1024
         
     def initialize(self) -> bool:
         """Initialize video processing libraries"""
@@ -48,8 +50,9 @@ class VideoAnalyzer(BaseAnalyzer):
                 try:
                     import google.generativeai as genai
                     genai.configure(api_key=api_key)
-                    self.genai_model = genai.GenerativeModel('gemini-1.5-pro')
-                    print("[VideoAnalyzer] Gemini Multimodal AI (Flash Latest) initialized")
+                    model_name = os.getenv('GEMINI_VIDEO_MODEL', 'gemini-1.5-pro')
+                    self.genai_model = genai.GenerativeModel(model_name)
+                    print(f"[VideoAnalyzer] Gemini Multimodal AI initialized: {model_name}")
                 except Exception as e:
                     print(f"[VideoAnalyzer] Failed to initialize Gemini: {e}")
                     self.genai_model = None
@@ -86,22 +89,17 @@ class VideoAnalyzer(BaseAnalyzer):
         Hybrid: Frame-by-frame analysis + Gemini Multimodal Video Analysis
         """
         start_time = time.time()
-        
-        # Save to temp file if bytes or stream
-        temp_path = None
-        video_path = str(video_source)
-        
-        # Handle non-path inputs
-        if not isinstance(video_source, (str, Path)):
-            try:
-                import tempfile
-                tfile = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
-                tfile.write(video_source.read() if hasattr(video_source, 'read') else video_source)
-                tfile.close()
-                video_path = tfile.name
-                temp_path = video_path
-            except Exception as e:
-                return self._create_result(0, 0, [], [f"Gagal memproses input video: {e}"], 0)
+
+        try:
+            video_path, temp_paths = self._prepare_video_source(video_source)
+        except Exception as e:
+            return self._create_result(
+                score=0,
+                confidence=0,
+                findings=[],
+                warnings=[f"Gagal memproses input video: {e}"],
+                analysis_time=time.time() - start_time,
+            )
             
         findings = []
         warnings = []
@@ -120,8 +118,13 @@ class VideoAnalyzer(BaseAnalyzer):
                     'fps': cap.get(cv2.CAP_PROP_FPS),
                     'frame_count': int(cap.get(cv2.CAP_PROP_FRAME_COUNT)),
                     'width': int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                    'height': int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                    'height': int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
                 }
+                fps = video_info['fps'] or 0
+                video_info['duration'] = (
+                    round(video_info['frame_count'] / fps, 2)
+                    if fps > 0 else 0
+                )
                 
                 # Extract frames (limit to 10 spread out frames for local checks)
                 frames = self._extract_frames(cap, video_info['frame_count'])
@@ -135,9 +138,12 @@ class VideoAnalyzer(BaseAnalyzer):
         face_result = self._analyze_faces(frames)
         temporal_result = self._check_temporal_consistency(frames)
         deepfake_result = self._detect_deepfake_indicators(frames, face_result)
+        audio_result = self._analyze_audio_sync(video_path)
         
         if deepfake_result['is_deepfake']:
             warnings.append(f"Indikator Deepfake terdeteksi (heuristic): {deepfake_result['indicators_found']} tanda")
+        if audio_result.get('warning'):
+            warnings.append(audio_result['warning'])
         
         # 3. Gemini Multimodal Analysis (The Heavy Lifter)
         ai_video_result = {'performed': False}
@@ -152,13 +158,15 @@ class VideoAnalyzer(BaseAnalyzer):
             warnings.append("Gemini model tidak tersedia untuk analisis video mendalam")
 
         # Cleanup temp file
-        if temp_path and os.path.exists(temp_path):
+        for temp_path in temp_paths:
             try:
-                os.remove(temp_path)
-            except: pass
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+            except OSError:
+                pass
 
         # Calculate Scores
-        heuristic_score = 1.0 - deepfake_result['confidence']
+        heuristic_score = 1.0 - deepfake_result.get('confidence', 0.35)
         
         final_score = heuristic_score
         confidence = 0.6
@@ -182,10 +190,124 @@ class VideoAnalyzer(BaseAnalyzer):
                 'video_info': video_info,
                 'heuristic_deepfake': deepfake_result,
                 'ai_multimodal': ai_video_result,
-                'temporal_consistency': temporal_result
+                'temporal_consistency': temporal_result,
+                'audio_analysis': audio_result,
             },
             analysis_time=analysis_time
         )
+
+    def _prepare_video_source(self, video_source: Any) -> Tuple[str, List[str]]:
+        """Return a local path for a path, upload bytes/stream, or remote URL."""
+        temp_paths: List[str] = []
+
+        if isinstance(video_source, (str, Path)):
+            source = str(video_source).strip()
+            parsed = urlparse(source)
+            if parsed.scheme in {"http", "https"}:
+                path = self._download_video_url(source)
+                temp_paths.append(path)
+                return path, temp_paths
+            return source, temp_paths
+
+        suffix = ".mp4"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+            payload = video_source.read() if hasattr(video_source, "read") else video_source
+            temp_file.write(payload)
+            temp_paths.append(temp_file.name)
+            return temp_file.name, temp_paths
+
+    def _download_video_url(self, url: str) -> str:
+        """Download a direct video URL, or use yt-dlp for common video platforms."""
+        parsed = urlparse(url)
+        host = (parsed.netloc or "").lower()
+        platform_hosts = ("youtube.com", "youtu.be", "vimeo.com", "tiktok.com")
+
+        if any(platform in host for platform in platform_hosts):
+            return self._download_with_ytdlp(url)
+
+        suffix = Path(parsed.path).suffix.lower()
+        if suffix not in {".mp4", ".mov", ".avi", ".webm", ".mkv"}:
+            suffix = ".mp4"
+
+        try:
+            import requests
+
+            with requests.get(url, stream=True, timeout=30) as response:
+                response.raise_for_status()
+                content_type = response.headers.get("content-type", "").lower()
+                if content_type and not (
+                    content_type.startswith("video/")
+                    or "octet-stream" in content_type
+                ):
+                    raise ValueError(
+                        "URL tidak mengarah ke file video langsung. "
+                        "Gunakan URL file video atau pasang yt-dlp untuk platform video."
+                    )
+
+                content_length = response.headers.get("content-length")
+                if content_length and int(content_length) > self.max_download_size:
+                    raise ValueError("Ukuran video melebihi batas 50MB")
+
+                downloaded = 0
+                with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+                    for chunk in response.iter_content(chunk_size=1024 * 1024):
+                        if not chunk:
+                            continue
+                        downloaded += len(chunk)
+                        if downloaded > self.max_download_size:
+                            temp_file.close()
+                            os.remove(temp_file.name)
+                            raise ValueError("Ukuran video melebihi batas 50MB")
+                        temp_file.write(chunk)
+                    return temp_file.name
+        except ValueError:
+            raise
+        except Exception as e:
+            raise ValueError(f"Gagal mengunduh video dari URL: {e}") from e
+
+    def _download_with_ytdlp(self, url: str) -> str:
+        """Download a video-platform URL with yt-dlp when the dependency exists."""
+        try:
+            import yt_dlp
+        except ImportError as e:
+            raise ValueError(
+                "URL YouTube/Vimeo/TikTok membutuhkan dependency yt-dlp. "
+                "Install dengan `pip install yt-dlp` atau unggah file video langsung."
+            ) from e
+
+        output_template = os.path.join(
+            tempfile.gettempdir(),
+            f"factify_video_{int(time.time() * 1000)}.%(ext)s",
+        )
+        options = {
+            "format": "best[ext=mp4][filesize<50M]/best[filesize<50M]/best",
+            "outtmpl": output_template,
+            "quiet": True,
+            "noplaylist": True,
+            "max_filesize": self.max_download_size,
+        }
+
+        try:
+            with yt_dlp.YoutubeDL(options) as ydl:
+                info = ydl.extract_info(url, download=True)
+                downloaded = ydl.prepare_filename(info)
+                if not os.path.exists(downloaded):
+                    base, _ = os.path.splitext(downloaded)
+                    matches = [
+                        f"{base}{ext}"
+                        for ext in (".mp4", ".webm", ".mkv", ".mov")
+                        if os.path.exists(f"{base}{ext}")
+                    ]
+                    if matches:
+                        downloaded = matches[0]
+                if not os.path.exists(downloaded):
+                    raise ValueError("yt-dlp tidak menghasilkan file video")
+                if os.path.getsize(downloaded) > self.max_download_size:
+                    os.remove(downloaded)
+                    raise ValueError("Ukuran video melebihi batas 50MB")
+                return downloaded
+        except Exception as e:
+            raise ValueError(f"Gagal mengunduh video platform: {e}") from e
 
     def _analyze_with_gemini_video(self, video_path: str) -> Dict[str, Any]:
         """Upload and analyze video with Gemini - ENHANCED VERSION"""
@@ -289,10 +411,11 @@ class VideoAnalyzer(BaseAnalyzer):
         if total_frames <= 0: return frames
         
         # Determine sampling
-        num_frames = getattr(self, 'max_frames', 10)
+        num_frames = min(getattr(self, 'max_frames', 10), total_frames)
         
         # Safe sampling across the video
-        indices = np.linspace(0, total_frames-2, num_frames, dtype=int)
+        end_index = max(0, total_frames - 1)
+        indices = np.linspace(0, end_index, num_frames, dtype=int)
         
         for idx in indices:
             cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
@@ -350,8 +473,8 @@ class VideoAnalyzer(BaseAnalyzer):
     
     def _check_temporal_consistency(self, frames: List[np.ndarray]) -> Dict[str, Any]:
         """Check for temporal inconsistencies between frames"""
-        if len(frames) < 2:
-            return {'inconsistent': False, 'score': 0}
+        if not cv2 or np is None or len(frames) < 2:
+            return {'inconsistent': False, 'score': 0.8, 'avg_frame_delta': 0}
         
         differences = []
         for i in range(1, len(frames)):
@@ -359,8 +482,13 @@ class VideoAnalyzer(BaseAnalyzer):
             diff_score = np.mean(diff) / 255
             differences.append(diff_score)
         
-        avg_diff = np.mean(differences) if differences else 0
-        return {'inconsistent': False, 'score': avg_diff}
+        avg_diff = float(np.mean(differences)) if differences else 0.0
+        consistency_score = max(0.0, min(1.0, 1.0 - min(avg_diff * 1.5, 1.0)))
+        return {
+            'inconsistent': avg_diff > 0.75,
+            'score': consistency_score,
+            'avg_frame_delta': avg_diff,
+        }
     
     def _detect_deepfake_indicators(self, frames: List[np.ndarray], face_result: Dict[str, Any]) -> Dict[str, Any]:
         """Detect heuristic deepfake indicators"""
@@ -371,9 +499,14 @@ class VideoAnalyzer(BaseAnalyzer):
             if counts and np.var(counts) > 0.5:
                 indicators += 1
                 
+        if not frames:
+            risk = 0.35
+        else:
+            risk = min(0.9, indicators * 0.35)
+
         return {
-            'is_deepfake': indicators > 0,
-            'confidence': 0.4 if indicators > 0 else 0.8,
+            'is_deepfake': risk >= 0.5,
+            'confidence': risk,
             'indicators_found': indicators
         }
     

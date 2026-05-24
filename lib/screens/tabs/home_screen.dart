@@ -677,7 +677,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
             colors: [
               const Color(0xFF0F0F1E),
               const Color(0xFF1A1A2E),
-              const Color(0xFF16213E).withOpacity(0.8),
+              const Color(0xFF16213E).withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -961,7 +961,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6C5CE7).withOpacity(0.4),
+                      color: const Color(0xFF6C5CE7).withValues(alpha: 0.4),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -975,7 +975,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Image.asset(
@@ -1101,7 +1101,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF4ECDC4).withOpacity(0.3),
+                        color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -1137,18 +1137,18 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFF2D2D44).withOpacity(0.6),
-                        const Color(0xFF2D2D44).withOpacity(0.3),
+                        const Color(0xFF2D2D44).withValues(alpha: 0.6),
+                        const Color(0xFF2D2D44).withValues(alpha: 0.3),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF4ECDC4).withOpacity(0.1),
+                        color: const Color(0xFF4ECDC4).withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -1172,19 +1172,19 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.95),
-            Colors.white.withOpacity(0.9),
+            Colors.white.withValues(alpha: 0.95),
+            Colors.white.withValues(alpha: 0.9),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4ECDC4).withOpacity(0.2),
+            color: const Color(0xFF4ECDC4).withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1254,7 +1254,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF4ECDC4).withOpacity(0.3),
+                        color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -1320,13 +1320,13 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            color.withOpacity(0.15),
-            color.withOpacity(0.05),
+            color.withValues(alpha: 0.15),
+            color.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -1346,7 +1346,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               fontSize: 11,
             ),
           ),
@@ -1393,10 +1393,10 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFF4ECDC4).withOpacity(0.15),
+                color: const Color(0xFF4ECDC4).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFF4ECDC4).withOpacity(0.3),
+                  color: const Color(0xFF4ECDC4).withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -1439,13 +1439,13 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                (tip['color'] as Color).withOpacity(0.15),
-                (tip['color'] as Color).withOpacity(0.05),
+                (tip['color'] as Color).withValues(alpha: 0.15),
+                (tip['color'] as Color).withValues(alpha: 0.05),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: (tip['color'] as Color).withOpacity(0.3),
+              color: (tip['color'] as Color).withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -1458,7 +1458,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: (tip['color'] as Color).withOpacity(0.4),
+                      color: (tip['color'] as Color).withValues(alpha: 0.4),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -1487,7 +1487,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
                     Text(
                       tip['subtitle'],
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                         height: 1.4,
                       ),
@@ -1500,7 +1500,7 @@ Prinsip baru di era AI: untuk video atau audio sensitif, SELALU verifikasi sumbe
               const SizedBox(width: 8),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 size: 16,
               ),
             ],

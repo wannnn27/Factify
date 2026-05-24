@@ -201,7 +201,7 @@ class _DiscussionSectionState extends State<DiscussionSection> {
               color: const Color(0xFF2D2D44),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, -2),
                 ),
@@ -216,7 +216,7 @@ class _DiscussionSectionState extends State<DiscussionSection> {
                       padding: const EdgeInsets.all(8),
                       margin: const EdgeInsets.only(bottom: 8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4ECDC4).withOpacity(0.1),
+                        color: const Color(0xFF4ECDC4).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(

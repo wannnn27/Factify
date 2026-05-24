@@ -23,7 +23,7 @@ class ArticleCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -47,11 +47,11 @@ class ArticleCard extends StatelessWidget {
                     fadeInDuration: const Duration(milliseconds: 200),
                     placeholder: (context, url) => Container(
                       height: 120,
-                      color: article['color'].withOpacity(0.2),
+                      color: article['color'].withValues(alpha: 0.2),
                     ),
                     errorWidget: (context, url, error) => Container(
                       height: 140,
-                      color: article['color'].withOpacity(0.3),
+                      color: article['color'].withValues(alpha: 0.3),
                       child: Center(
                         child: Icon(
                           article['icon'] ?? Icons.article,
@@ -74,7 +74,7 @@ class ArticleCard extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.7),
+                            Colors.black.withValues(alpha: 0.7),
                           ],
                         ),
                       ),
@@ -91,7 +91,7 @@ class ArticleCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: article['color'].withOpacity(0.4),
+                            color: article['color'].withValues(alpha: 0.4),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -114,7 +114,7 @@ class ArticleCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -187,7 +187,7 @@ class ArticleCard extends StatelessWidget {
                           gradient: LinearGradient(
                             colors: [
                               article['color'],
-                              article['color'].withOpacity(0.7),
+                              article['color'].withValues(alpha: 0.7),
                             ],
                           ),
                           shape: BoxShape.circle,

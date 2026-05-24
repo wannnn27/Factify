@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../models/verification_result.dart';
 
@@ -23,10 +22,7 @@ class CredibilityScoreCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xF2FFFFFF),
-            Color(0xE6FFFFFF),
-          ],
+          colors: [Color(0xF2FFFFFF), Color(0xE6FFFFFF)],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
@@ -118,10 +114,7 @@ class CredibilityScoreCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'Confidence: ${(confidence! * 100).toStringAsFixed(1)}%',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
           ],
         ],
@@ -147,16 +140,10 @@ class SourceInfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0x992D2D44),
-            Color(0x662D2D44),
-          ],
+          colors: [Color(0x992D2D44), Color(0x662D2D44)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white10,
-          width: 1,
-        ),
+        border: Border.all(color: Colors.white10, width: 1),
       ),
       child: Row(
         children: [
@@ -177,10 +164,7 @@ class SourceInfoCard extends StatelessWidget {
               children: [
                 Text(
                   'Sumber ${contentType.displayName}',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -235,10 +219,7 @@ class ExpandableInfoCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [
-                Color(0x992D2D44),
-                Color(0x662D2D44),
-              ],
+              colors: [Color(0x992D2D44), Color(0x662D2D44)],
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
@@ -328,16 +309,10 @@ class VideoAnalysisCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0x266C5CE7),
-            Color(0x0D6C5CE7),
-          ],
+          colors: [Color(0x266C5CE7), Color(0x0D6C5CE7)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0x4D6C5CE7),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0x4D6C5CE7), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,8 +327,11 @@ class VideoAnalysisCard extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child:
-                    const Icon(Icons.analytics, color: Colors.white, size: 18),
+                child: const Icon(
+                  Icons.analytics,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 12),
               const Text(
@@ -420,10 +398,7 @@ class VideoAnalysisCard extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
               Text(
                 '${score.round()}%',
@@ -463,16 +438,10 @@ class ImageAnalysisCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0x264ECDC4),
-            Color(0x0D4ECDC4),
-          ],
+          colors: [Color(0x264ECDC4), Color(0x0D4ECDC4)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0x4D4ECDC4),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0x4D4ECDC4), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -487,8 +456,11 @@ class ImageAnalysisCard extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.image_search,
-                    color: Colors.white, size: 18),
+                child: const Icon(
+                  Icons.image_search,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 12),
               const Text(
@@ -505,7 +477,7 @@ class ImageAnalysisCard extends StatelessWidget {
           _buildInfoRow(
             'ELA Analysis',
             '${detail.elaScore.round()}%',
-            _getScoreColor(detail.elaScore),
+            _getScoreColor(detail.elaScore, inverse: true),
           ),
           _buildInfoRow(
             'Manipulation Score',
@@ -519,11 +491,7 @@ class ImageAnalysisCard extends StatelessWidget {
               const Color(0xFFFF6B6B),
             ),
           if (detail.copyMoveDetected)
-            _buildInfoRow(
-              'Copy-Move Detected',
-              'Yes',
-              const Color(0xFFFFD93D),
-            ),
+            _buildInfoRow('Copy-Move Detected', 'Yes', const Color(0xFFFFD93D)),
         ],
       ),
     );
@@ -549,10 +517,7 @@ class ImageAnalysisCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
-            ),
+            style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -587,16 +552,10 @@ class TextAnalysisCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0x265B9BD5),
-            Color(0x0D5B9BD5),
-          ],
+          colors: [Color(0x265B9BD5), Color(0x0D5B9BD5)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0x4D5B9BD5),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0x4D5B9BD5), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,8 +570,11 @@ class TextAnalysisCard extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.text_snippet,
-                    color: Colors.white, size: 18),
+                child: const Icon(
+                  Icons.text_snippet,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 12),
               const Text(
@@ -627,15 +589,24 @@ class TextAnalysisCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildAnalysisBar('Hoax Score', detail.hoaxScore, inverse: true),
-          _buildAnalysisBar('Clickbait Score', detail.clickbaitScore,
-              inverse: true),
+          _buildAnalysisBar(
+            'Clickbait Score',
+            detail.clickbaitScore,
+            inverse: true,
+          ),
           _buildAnalysisBar('Credibility Score', detail.credibilityScore),
           const SizedBox(height: 8),
-          _buildInfoChip('Sentiment', detail.sentimentLabel.toUpperCase(),
-              _getSentimentColor(detail.sentimentLabel)),
+          _buildInfoChip(
+            'Sentiment',
+            detail.sentimentLabel.toUpperCase(),
+            _getSentimentColor(detail.sentimentLabel),
+          ),
           const SizedBox(height: 4),
           _buildInfoChip(
-              'Word Count', '${detail.wordCount} words', const Color(0xFF5B9BD5)),
+            'Word Count',
+            '${detail.wordCount} words',
+            const Color(0xFF5B9BD5),
+          ),
         ],
       ),
     );
@@ -676,10 +647,7 @@ class TextAnalysisCard extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
               Text(
                 '${score.round()}%',
@@ -711,10 +679,7 @@ class TextAnalysisCard extends StatelessWidget {
       children: [
         Text(
           '$label: ',
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: Colors.white70, fontSize: 12),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

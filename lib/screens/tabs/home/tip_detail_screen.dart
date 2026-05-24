@@ -27,7 +27,7 @@ class TipDetailScreen extends StatelessWidget {
             leading: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: IconButton(
@@ -59,7 +59,7 @@ class TipDetailScreen extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.3),
+                          Colors.black.withValues(alpha: 0.3),
                           const Color(0xFF0F0F1E),
                         ],
                         stops: const [0.0, 0.6, 1.0],
@@ -72,11 +72,11 @@ class TipDetailScreen extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.9),
+                        color: primaryColor.withValues(alpha: 0.9),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: primaryColor.withOpacity(0.5),
+                            color: primaryColor.withValues(alpha: 0.5),
                             blurRadius: 30,
                             spreadRadius: 5,
                           ),
@@ -121,10 +121,10 @@ class TipDetailScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.1),
+                        color: primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: primaryColor.withOpacity(0.3),
+                          color: primaryColor.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -135,7 +135,7 @@ class TipDetailScreen extends StatelessWidget {
                             child: Text(
                               subtitle,
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 15,
                                 height: 1.5,
                               ),
@@ -176,7 +176,7 @@ class TipDetailScreen extends StatelessWidget {
                         Expanded(
                           child: Container(
                             height: 1,
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
                         ),
                       ],
@@ -271,8 +271,8 @@ class TipDetailScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            color.withOpacity(0.6),
-            color.withOpacity(0.3),
+            color.withValues(alpha: 0.6),
+            color.withValues(alpha: 0.3),
             const Color(0xFF0F0F1E),
           ],
         ),
@@ -327,7 +327,7 @@ class TipDetailScreen extends StatelessWidget {
                   child: Text(
                     trimmedLine.substring(1).trim(),
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 15,
                       height: 1.6,
                     ),
@@ -353,7 +353,7 @@ class TipDetailScreen extends StatelessWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.2),
+                    color: accentColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
@@ -396,7 +396,7 @@ class TipDetailScreen extends StatelessWidget {
             child: Text(
               trimmedLine,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 fontSize: 15,
                 height: 1.7,
               ),

@@ -60,18 +60,18 @@ class _ActivityStatsChartState extends State<ActivityStatsChart>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF2D2D44).withOpacity(0.8),
-            const Color(0xFF1A1A2E).withOpacity(0.9),
+            const Color(0xFF2D2D44).withValues(alpha: 0.8),
+            const Color(0xFF1A1A2E).withValues(alpha: 0.9),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF4ECDC4).withOpacity(0.2),
+          color: const Color(0xFF4ECDC4).withValues(alpha: 0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -110,7 +110,7 @@ class _ActivityStatsChartState extends State<ActivityStatsChart>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4ECDC4).withOpacity(0.15),
+                  color: const Color(0xFF4ECDC4).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -268,7 +268,7 @@ class _ActivityStatsChartState extends State<ActivityStatsChart>
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.5),
+            color: color.withValues(alpha: 0.5),
             blurRadius: 8,
             spreadRadius: 1,
           ),
@@ -288,7 +288,7 @@ class _ActivityStatsChartState extends State<ActivityStatsChart>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[800]!.withOpacity(0.3),
+              color: Colors.grey[800]!.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -369,9 +369,9 @@ class _ActivityStatsChartState extends State<ActivityStatsChart>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [

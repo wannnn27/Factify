@@ -43,9 +43,9 @@ class ImageAnalyzer(BaseAnalyzer):
                 try:
                     import google.generativeai as genai
                     genai.configure(api_key=api_key)
-                    # Use Gemini Flash Latest for vision (stable)
-                    self.genai_model = genai.GenerativeModel('gemini-1.5-pro')
-                    print("[ImageAnalyzer] Gemini Vision AI (Flash Latest) initialized")
+                    model_name = os.getenv('GEMINI_IMAGE_MODEL', 'gemini-1.5-pro')
+                    self.genai_model = genai.GenerativeModel(model_name)
+                    print(f"[ImageAnalyzer] Gemini Vision AI initialized: {model_name}")
                 except Exception as e:
                     print(f"[ImageAnalyzer] Failed to initialize Gemini: {e}")
                     self.genai_model = None
